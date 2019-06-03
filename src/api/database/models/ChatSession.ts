@@ -1,9 +1,9 @@
-import { User } from './User'
+import { IUser } from './User'
 import mongoose, { Document, Schema, modelNames } from 'mongoose'
 import { ModelName } from '../../../constants/ModelName'
 
 export interface IChatSession extends Document {
-  participants: User[]
+  participants: IUser[]
   type: ChatSessionTypes
 }
 
@@ -28,4 +28,4 @@ const chatSessionSchema = new Schema(
   { timestamps: true },
 )
 
-export const ChatSessionModel = mongoose.model<IChatSession>(ModelName.COMMENT, chatSessionSchema)
+export const ChatSessionModel = mongoose.model<IChatSession>(ModelName.CHAT_SESSION, chatSessionSchema)

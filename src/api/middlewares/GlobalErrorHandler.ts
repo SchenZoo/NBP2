@@ -25,6 +25,8 @@ export class GlobalErrorHandler implements ExpressErrorMiddlewareInterface {
         response.status(500)
         break
     }
+    console.log(error.name)
+    console.log(error)
     return response.json(error)
   }
 }

@@ -1,31 +1,27 @@
-import { User } from './User'
-import { Section } from './Section'
-import { Group } from './Group'
 import mongoose, { Document, Schema } from 'mongoose'
 import { ModelName } from '../../../constants/ModelName'
+import { IUser } from './User'
+import { IEvent } from './Event'
+import { IPost } from './Post'
 
 export interface IMessage extends Document {
   text?: string
-  sender: User | number
-  data?: Group | Section
+  sender: IUser | number
+  data?: IEvent | IPost
   onModel?: string
-}
-
-enum Messageable {
-  Group = ModelName.GROUP,
-  Section = ModelName.SECTION,
 }
 
 const messageSchema = new Schema(
   {
     text: String,
     sender: { type: Schema.Types.ObjectId, ref: ModelName.USER },
-    onModel: { type: String, required: true, enum: Messageable },
+    onModel: { type: String, required: true },
     data: {
       type: Schema.Types.ObjectId,
       required: false,
       refPath: 'onModel',
     },
+    session: { type: Schema.Types.ObjectId, ref: ModelName.CHAT_SESSION },
   },
   { timestamps: true },
 )

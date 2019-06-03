@@ -1,15 +1,16 @@
-import { JsonController, Post, Body, Req } from 'routing-controllers'
-import { User, UserModel } from '../database/models/User'
+import { JsonController, Post, Body, Req, Get } from 'routing-controllers'
+import { IUser, UserModel } from '../database/models/User'
 import jwt = require('jsonwebtoken')
 import { RoleNames } from '../../constants/RoleNames'
 import { ConflictError } from '../errors/ConflictError'
-import { Request } from 'express'
+import { hashPassowrd } from '../misc/Hash'
+import { UserValidator } from '../validators/UserValidator'
 
 @JsonController('/auth')
 export class AuthController {
   @Post('/login')
-  public async get(@Body({ validate: { whitelist: true } }) user: User, @Req() req: Request) {
-    const foundUser = await UserModel.findOne({ username: user.username })
+  public async get(@Body() user: UserValidator) {
+    const foundUser = await UserModel.findOne({ username: user.username }).select('+password')
     if (foundUser) {
       try {
         if (foundUser.checkPassword(user.password)) {
@@ -20,6 +21,7 @@ export class AuthController {
           const token = jwt.sign(payload, secret as string, {
             expiresIn: '31d',
           })
+          foundUser.password = ''
           return { token, user: foundUser }
         } else {
           return { message: 'Login failed.' }
@@ -32,8 +34,8 @@ export class AuthController {
   }
 
   @Post('/register')
-  public async save(@Body({ validate: { whitelist: true } }) user: User) {
-    user.password = UserModel.getPasswordHash(user.password)
+  public async save(@Body() user: UserValidator) {
+    user.password = hashPassowrd(user.password)
     user.roles = [RoleNames.PARTICIPANT]
     const newUser = new UserModel(user)
     try {
@@ -45,6 +47,7 @@ export class AuthController {
       const token = jwt.sign(payload, secret as string, {
         expiresIn: '31d',
       })
+      saved.password = ''
       return {
         token,
         user: saved,

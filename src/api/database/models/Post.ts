@@ -1,18 +1,40 @@
-import mongoose from 'mongoose'
-import { Typegoose, prop, Ref } from 'typegoose'
-import { User } from './User'
+import mongoose, { Document, Schema } from 'mongoose'
+import { IUser } from './User'
+import { ModelName } from '../../../constants/ModelName'
+import { ISection } from './Section'
+import { IEvent } from './Event'
+import { IComment, CommentModel, commentSchema } from './Comment'
 
-export class Post extends Typegoose {
-  @prop({ required: true })
-  name: string
-  @prop({ required: true, ref: User })
-  creator: Ref<User>
-  // @prop({ref:})
+export interface IPost extends Document {
+  title: string
+  description: string
+  creator: IUser | number
+  comments?: IComment[]
+  section: ISection | number
 }
 
-export const PostModel = new Post().getModelForClass(Post, {
-  schemaOptions: {
-    timestamps: true,
+export const POST_DISCRIMINATOR_KEY = 'type'
+export enum PostTypes {
+  EVENT = 'EventPost',
+  TEXT_POST = 'TextPost',
+}
+
+const postSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    creator: { type: Schema.Types.ObjectId, ref: ModelName.USER },
+    section: { type: Schema.Types.ObjectId, ref: ModelName.SECTION },
   },
-  existingMongoose: mongoose,
+  { timestamps: true, toJSON: { virtuals: true } },
+)
+
+postSchema.virtual('comments', {
+  ref: ModelName.COMMENT,
+  localField: '_id',
+  foreignField: 'commented',
+  justOne: false,
+  options: { sort: { createdAt: -1 }, limit: 10, where: { onModel: ModelName.POST } },
 })
+
+export const PostModel = mongoose.model<IPost>(ModelName.POST, postSchema)

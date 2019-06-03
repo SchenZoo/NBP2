@@ -1,17 +1,18 @@
-import { Typegoose, prop, Ref } from 'typegoose'
-import { User } from './User'
-import mongoose from 'mongoose'
+import mongoose, { Document, Schema } from 'mongoose'
+import { ModelName } from '../../../constants/ModelName'
+import { IUser } from './User'
 
-export class Section extends Typegoose {
-  @prop({ required: true })
+export interface ISection extends Document {
   name: string
-  @prop({ required: true, ref: User })
-  creator: Ref<User>
+  creator: IUser | number
 }
 
-export const SectionModel = new Section().getModelForClass(Section, {
-  schemaOptions: {
-    timestamps: true,
+const sectionSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    creator: { type: Schema.Types.ObjectId, ref: ModelName.USER },
   },
-  existingMongoose: mongoose,
-})
+  { timestamps: true },
+)
+
+export const SectionModel = mongoose.model<ISection>(ModelName.SECTION, sectionSchema)

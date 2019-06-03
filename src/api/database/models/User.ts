@@ -1,44 +1,47 @@
-import { hashSync, compareSync } from 'bcrypt'
-import { Typegoose, prop, arrayProp, staticMethod, ModelType, instanceMethod, pre, Ref } from 'typegoose'
-import mongoose from 'mongoose'
-import { IsNotEmpty } from 'class-validator'
+import mongoose, { Schema, Document } from 'mongoose'
+import { compareSync } from 'bcrypt'
+import { ModelName } from '../../../constants/ModelName'
+import { DefaultImage } from '../../../constants/DefaultImages'
 
-export class User extends Typegoose {
-  @IsNotEmpty()
-  @prop({ required: true, unique: true })
+export interface IUser extends Document {
   username: string
-
-  @IsNotEmpty()
-  @prop({ required: true })
   password: string
-
-  @arrayProp({ required: true, items: String })
+  email: string
   roles: string[]
-
-  @staticMethod
-  static async findByUsername(this: ModelType<User> & typeof User, username: string) {
-    return this.findOne({
-      username,
-    })
-  }
-  @staticMethod
-  static getPasswordHash(this: ModelType<User> & typeof User, password: string) {
-    return hashSync(password, 8)
-  }
-  @instanceMethod
-  checkPassword(this: InstanceType<ModelType<User>>, password: string) {
-    return compareSync(password, this.password)
-  }
-
-  @instanceMethod
-  hasRole(this: InstanceType<ModelType<User>>, role: string) {
-    return this.roles.includes(role)
-  }
+  hasRoles(role: string[]): boolean
+  checkPassword(password: string): boolean
+}
+const userSchema = new Schema(
+  {
+    username: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    password: {
+      required: true,
+      type: String,
+      select: false,
+    },
+    email: {
+      type: String,
+    },
+    roles: {
+      type: [String],
+    },
+    imageUrl: {
+      type: String,
+      default: DefaultImage.USER_PROFILE,
+      get: url => `${process.env.APP_HOST}:${process.env.APP_PORT}/public/${url}`,
+    },
+  },
+  { timestamps: true },
+)
+userSchema.methods.checkPassword = function(password: string): boolean {
+  return compareSync(password, this.password)
+}
+userSchema.methods.hasRoles = function(roles: string[]): boolean {
+  return roles.some(role => this.roles.includes(role))
 }
 
-export const UserModel = new User().getModelForClass(User, {
-  schemaOptions: {
-    timestamps: true,
-  },
-  existingMongoose: mongoose,
-})
+export const UserModel = mongoose.model<IUser>(ModelName.USER, userSchema)

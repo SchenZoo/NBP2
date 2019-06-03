@@ -20,7 +20,8 @@
     "import-spacing": true,
     "indent": [true, "spaces"],
     "member-ordering": false,
-    "comment-format": [true, "check-space"]
+    "comment-format": [true, "check-space"],
+    "max-classes-per-file": false
   },
   "rulesDirectory": []
 }

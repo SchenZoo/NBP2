@@ -20,6 +20,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
+    "faker": "^4.1.0",
     "helmet": "^3.18.0",
     "mongoose": "^5.5.11",
     "mongoose-delete": "^0.5.0",
@@ -28,8 +29,7 @@
     "passport-jwt": "^4.0.0",
     "routing-controllers": "^0.7.7",
     "socket.io": "^2.2.0",
-    "stoppable": "^1.1.0",
-    "typegoose": "^5.6.0"
+    "stoppable": "^1.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -42,7 +42,6 @@
     "@types/passport-jwt": "^3.0.1",
     "@types/socket.io": "^2.1.2",
     "@types/stoppable": "^1.1.0",
-    "Faker": "^0.7.2",
     "forever": "^1.0.0",
     "nodemon": "^1.19.1",
     "reflect-metadata": "^0.1.13",

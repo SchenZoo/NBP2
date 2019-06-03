@@ -1,4 +1,4 @@
-import { UserModel, User } from '../models/User'
+import { UserModel, IUser } from '../models/User'
 import { RoleNames } from '../../../constants/RoleNames'
 import mongoose = require('mongoose')
 import 'reflect-metadata'
@@ -6,14 +6,16 @@ import dotenv = require('dotenv')
 import path = require('path')
 dotenv.config({ path: path.resolve('.env') })
 import { MONGO_URL, MONGO_CONNECTION_OPTIONS } from '../../../config/MongoDBOptions'
+import { hashPassowrd } from '../../misc/Hash'
 
 function main() {
   ;(async () => {
     const admin = new UserModel({
       username: 'Admin',
-      password: UserModel.getPasswordHash('admin123'),
+      password: hashPassowrd('asdlolasd'),
       roles: [RoleNames.ADMIN],
-    } as User)
+      email: 'stankovic.aleksandar@elfak.rs',
+    } as IUser)
     try {
       console.log(await admin.save(), 'created')
       process.exit(0)

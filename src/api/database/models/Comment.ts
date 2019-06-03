@@ -1,26 +1,25 @@
-import mongoose, { Document, Schema } from 'mongoose'
-import { User } from './User'
-import { Post } from './Post'
-import { Section } from './Section'
+import mongoose, { Document, Schema, model } from 'mongoose'
+import { IUser } from './User'
 import { ModelName } from '../../../constants/ModelName'
+import { IPost } from './Post'
+import { IEvent } from './Event'
 
 export interface IComment extends Document {
   name: string
-  creator: User | number
-  commented: Post | Section | number
-  onModel: string
+  creator: IUser | number
+  commented: IPost | IEvent | number
+  onModel: Commentable
 }
 
-enum Commentable {
+export enum Commentable {
   Post = ModelName.POST,
-  Section = ModelName.SECTION,
 }
 
-const commentSchema = new Schema(
+export const commentSchema = new Schema(
   {
     name: { type: String, required: true },
-    creator: { type: Schema.Types.ObjectId, ref: ModelName.USER },
-    onModel: { type: String, required: true, enum: Commentable },
+    creator: { type: Schema.Types.ObjectId, ref: 'User' },
+    onModel: { type: String, required: true },
     commented: {
       type: Schema.Types.ObjectId,
       required: true,

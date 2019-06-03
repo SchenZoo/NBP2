@@ -1,29 +1,28 @@
-import { Typegoose, prop, Ref } from 'typegoose'
-import { User } from './User'
-import mongoose from 'mongoose'
+import { IUser } from './User'
+import mongoose, { Document, Schema } from 'mongoose'
+import { ModelName } from '../../../constants/ModelName'
+import { locationSchema, ILocation } from './Location'
+import { PostModel, POST_DISCRIMINATOR_KEY, PostTypes } from './Post'
 
-export class Event extends Typegoose {
-  @prop({ required: true })
-  name: string
-  @prop({ required: true, ref: User })
-  creator: Ref<User>
-  @prop({ required: true })
+export interface IEvent extends Document {
+  title: string
   description: string
-  @prop({ required: false })
-  location: {
-    latitude: number
-    longitude: number
-  }
-  @prop()
-  time: {
-    startsAt: Date
-    endsAt: Date
-  }
+  creator: IUser | number
+  location?: ILocation
+  startsAt?: Date
+  endsAt?: Date
 }
 
-export const EventModel = new Event().getModelForClass(Event, {
-  schemaOptions: {
-    timestamps: true,
+const eventSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    creator: { type: Schema.Types.ObjectId, ref: ModelName.USER },
+    startsAt: { type: Date, required: false },
+    endsAt: { type: Date, required: false },
+    location: locationSchema,
   },
-  existingMongoose: mongoose,
-})
+  { discriminatorKey: POST_DISCRIMINATOR_KEY },
+)
+
+export const EventModel = PostModel.discriminator<IEvent>(PostTypes.EVENT, eventSchema)

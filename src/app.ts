@@ -8,6 +8,8 @@ import helmet = require('helmet')
 import { MONGO_URL, MONGO_CONNECTION_OPTIONS } from './config/MongoDBOptions'
 import { GlobalErrorHandler } from './api/middlewares/GlobalErrorHandler'
 import { JwtStrategy } from './auth/JwtStrategy'
+import models = require('./api/database/models/index')
+console.log(models)
 
 RoutingUseContainer(Container)
 export const app: express.Application = express()
