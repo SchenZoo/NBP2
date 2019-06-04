@@ -24,6 +24,7 @@ const notificationSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+    openedAt: { type: Date, required: false},
   },
   { timestamps: true },
 )

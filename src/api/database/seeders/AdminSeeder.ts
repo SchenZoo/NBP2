@@ -20,6 +20,7 @@ function main() {
       console.log(await admin.save(), 'created')
       process.exit(0)
     } catch (err) {
+      console.log(err)
       console.log('You have already created this user')
       process.exit(0)
     }

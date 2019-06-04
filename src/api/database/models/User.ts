@@ -11,6 +11,7 @@ export interface IUser extends Document {
   hasRoles(role: string[]): boolean
   checkPassword(password: string): boolean
 }
+
 const userSchema = new Schema(
   {
     username: {

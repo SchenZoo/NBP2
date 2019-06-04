@@ -17,8 +17,6 @@ export class PostController {
   public async get(@QueryParams() query: Pagination, @Param('sectionId') sectionId?: number) {
     const posts = PostModel.find()
       .sort({ createdAt: -1 })
-      .limit(query.take)
-      .skip(query.skip)
       .populate('creator')
       .populate('comments')
     if (sectionId) {
