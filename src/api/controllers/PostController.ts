@@ -1,4 +1,4 @@
-import { JsonController, Get, UseBefore, QueryParams, Post, Body, Put, Param, Delete, BodyParam, CurrentUser, Params } from 'routing-controllers'
+import { JsonController, Get, UseBefore, QueryParams, Post, Body, Put, Param, Delete, BodyParam, CurrentUser, Params, Req } from 'routing-controllers'
 import { passportJwtMiddleware } from '../middlewares/PassportJwtMiddleware'
 import { Pagination } from '../misc/QueryPagination'
 import { PostModel, PostTypes } from '../database/models/Post'
@@ -9,6 +9,8 @@ import { BASE_POLICY_NAMES } from '../policy/BasePolicy'
 import { PostPolicy } from '../policy/PostPolicy'
 import { EventModel } from '../database/models/Event'
 import { IUser } from '../database/models/User'
+import { CommentModel, IComment } from '../database/models/Comment'
+import { ModelName } from '../../constants/ModelName'
 
 @JsonController('/post')
 export class PostController {
@@ -18,7 +20,10 @@ export class PostController {
     const posts = PostModel.find()
       .sort({ createdAt: -1 })
       .populate('creator')
-      .populate('comments')
+      .populate({
+        path: 'comments',
+        populate: 'creator',
+      })
     if (sectionId) {
       return posts.where({ section: sectionId })
     }
@@ -67,5 +72,11 @@ export class PostController {
   @UseBefore(passportJwtMiddleware)
   public async delete(@Param('id') id: string) {
     return PostModel.deleteOne({ id })
+  }
+
+  @Post('/:id/comment')
+  @UseBefore(passportJwtMiddleware)
+  public async addComment(@CurrentUser() user: IUser, @Body() text: string, @Param('id') id: number) {
+    return new CommentModel({ text, creator: user, modelName: ModelName.POST, commented: id } as IComment).save()
   }
 }
