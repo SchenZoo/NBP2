@@ -5,7 +5,7 @@ import { IPost } from './Post'
 import { IEvent } from './Event'
 
 export interface IComment extends Document {
-  name: string
+  text: string
   creator: IUser | number
   commented: IPost | IEvent | number
   onModel: Commentable
@@ -17,7 +17,7 @@ export enum Commentable {
 
 export const commentSchema = new Schema(
   {
-    name: { type: String, required: true },
+    text: { type: String, required: true },
     creator: { type: Schema.Types.ObjectId, ref: 'User' },
     onModel: { type: String, required: true },
     commented: {

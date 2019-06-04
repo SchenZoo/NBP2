@@ -19,7 +19,12 @@ const notificationSchema = new Schema(
       required: false,
       refPath: 'emitterOnModel',
     },
-    emitterOnModel: { type: String, required: true },
+    emitterOnModel: {
+      type: String,
+      required: function() {
+        return (this as any).emitter
+      },
+    },
     receiver: {
       type: Schema.Types.ObjectId,
       ref: 'User',

@@ -6,5 +6,9 @@ export class SectionValidation {
   @IsNotEmpty()
   name: string
 
+  @IsString()
+  @IsNotEmpty()
+  imageUrl: string
+
   creator: IUser
 }
