@@ -2,7 +2,7 @@ import { BasePolicy } from './BasePolicy'
 import { NotificationModel } from '../database/models/Notification'
 import { ObjectFromParamNotFound } from '../errors/ObjectFromParamNotFound'
 import { request } from 'http'
-import { INotificationRequest } from '../interface/INotificationRequest'
+import { INotificationRequest } from '../app_models/requests/INotificationRequest'
 
 export class NotificationPolicy extends BasePolicy {
   public async default(): Promise<boolean> {

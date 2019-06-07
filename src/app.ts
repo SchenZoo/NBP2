@@ -9,6 +9,7 @@ import { MONGO_URL, MONGO_CONNECTION_OPTIONS } from './config/MongoDBOptions'
 import { GlobalErrorHandler } from './api/middlewares/GlobalErrorHandler'
 import { JwtStrategy } from './auth/JwtStrategy'
 import models = require('./api/database/models/index')
+import { JsonInterceptor } from './api/interceptors/JsonInterceptor'
 console.log(models)
 
 RoutingUseContainer(Container)
@@ -35,10 +36,9 @@ useExpressServer(app, {
   validation: true,
   defaults: { nullResultCode: 404, undefinedResultCode: 404 },
   development: appEnv !== 'prod',
-  classToPlainTransformOptions: false,
-  classTransformer: false,
-  plainToClassTransformOptions: true,
+  classTransformer: true,
   defaultErrorHandler: false,
+  interceptors: [JsonInterceptor],
   currentUserChecker: (action: Action) => action.request.user,
 } as RoutingControllersOptions)
 

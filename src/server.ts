@@ -6,8 +6,11 @@ import http = require('http')
 import stoppable = require('stoppable')
 import { app } from './app'
 import { AddressInfo } from 'net'
+import Container from 'typedi'
+import { SocketService } from './api/services/SocketService'
 
 const server = stoppable(http.createServer(app))
+Container.set(SocketService, new SocketService(server))
 const port = app.get('port')
 server.listen(app.get('port'))
 server.on('error', onError)
@@ -65,5 +68,5 @@ function onError(error) {
 function onListening() {
   const addr = server.address()
 
-  console.log('Listening on ' + process.env.SERVER_HOST + ':' + (addr as AddressInfo).port)
+  console.log('Listening on ' + process.env.APP_HOST + ':' + (addr as AddressInfo).port)
 }

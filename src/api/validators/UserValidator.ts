@@ -1,5 +1,5 @@
 import { IUser } from '../database/models/User'
-import { IsString, IsNotEmpty, IsOptional, IsEmail, IsArray } from 'class-validator'
+import { IsString, IsNotEmpty, IsOptional, IsEmail, IsArray, IsBase64 } from 'class-validator'
 import { Type } from 'class-transformer'
 
 export class UserValidator {
@@ -12,7 +12,10 @@ export class UserValidator {
   @IsOptional()
   @IsEmail()
   email: string
-  @Type(() => String)
-  @IsArray()
+  @IsOptional()
+  @IsBase64()
+  imageBase64: string
+
+  imageUrl: string
   roles: string[]
 }

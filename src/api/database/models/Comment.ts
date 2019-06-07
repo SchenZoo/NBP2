@@ -3,12 +3,14 @@ import { IUser } from './User'
 import { ModelName } from '../../../constants/ModelName'
 import { IPost } from './Post'
 import { IEvent } from './Event'
+import mongoosePaginate = require('mongoose-paginate')
 
 export interface IComment extends Document {
   text: string
   creator: IUser | number
   commented: IPost | IEvent | number
   onModel: Commentable
+  imageUrl: string
 }
 
 export enum Commentable {
@@ -25,8 +27,13 @@ export const commentSchema = new Schema(
       required: true,
       refPath: 'onModel',
     },
+    imageUrl: {
+      type: String,
+      get: url => (url ? `${process.env.APP_HOST}:${process.env.APP_PORT}/public/${url}` : null),
+    },
   },
-  { timestamps: true },
+  { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } },
 )
+commentSchema.plugin(mongoosePaginate)
 
 export const CommentModel = mongoose.model<IComment>(ModelName.COMMENT, commentSchema)

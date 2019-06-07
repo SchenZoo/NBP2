@@ -1,3 +1,3 @@
 export enum DefaultImage {
-  USER_PROFILE = 'public/images/defaults/default-profile.png',
+  USER_PROFILE = 'images/defaults/default-profile.png',
 }

@@ -4,6 +4,7 @@ import { ModelName } from '../../../constants/ModelName'
 import { ISection } from './Section'
 import { IEvent } from './Event'
 import { IComment, CommentModel, commentSchema } from './Comment'
+import mongoosePaginate = require('mongoose-paginate')
 
 export interface IPost extends Document {
   title: string
@@ -26,8 +27,14 @@ const postSchema = new Schema(
     creator: { type: Schema.Types.ObjectId, ref: ModelName.USER },
     section: { type: Schema.Types.ObjectId, ref: ModelName.SECTION },
   },
-  { timestamps: true, toJSON: { virtuals: true } },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
+  },
 )
+postSchema.plugin(mongoosePaginate)
 
 postSchema.virtual('comments', {
   ref: ModelName.COMMENT,

@@ -1,5 +1,5 @@
-import { JsonController, Param, CurrentUser, Get } from 'routing-controllers'
-import { IUser } from '../database/models/User'
+import { JsonController, Param, CurrentUser, Get, QueryParams } from 'routing-controllers'
+import { IUser, UserModel } from '../database/models/User'
 import { FriendRequestModel } from '../database/models/FriendRequest'
 import { FriendshipModel } from '../database/models/Friendship'
 
@@ -7,9 +7,12 @@ import { FriendshipModel } from '../database/models/Friendship'
 export class UserController {
   @Get('/:id')
   public async get(@Param('id') id: string, @CurrentUser() user: IUser) {
-    const frequest = await FriendRequestModel.findOne().or([{ sender: id, receiver: user.id }, { sender: user.id, receiver: id }])
-    const friendship = await FriendshipModel.findOne().or([{ mario: id, luigi: user.id }, { mario: user.id, luigi: id }])
+    const fullFriend = Promise.all([
+      UserModel.findById(id),
+      FriendRequestModel.findOne().or([{ sender: id, receiver: user.id }, { sender: user.id, receiver: id }]),
+      FriendshipModel.findOne().or([{ mario: id, luigi: user.id }, { mario: user.id, luigi: id }]),
+    ])
 
-    return { frequest, friendship }
+    return { user: fullFriend[0], friendRequest: fullFriend[1], friendship: fullFriend[2] }
   }
 }

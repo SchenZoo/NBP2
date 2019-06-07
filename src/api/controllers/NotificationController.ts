@@ -6,22 +6,21 @@ import { NotificationModel } from '../database/models/Notification'
 import { NotificationPolicy } from '../policy/NotificationPolicy'
 import { policyCheck } from '../middlewares/AuthorizationMiddlewares'
 import { BASE_POLICY_NAMES } from '../policy/BasePolicy'
-import { INotificationRequest } from '../interface/INotificationRequest'
+import { INotificationRequest } from '../app_models/requests/INotificationRequest'
 
 @JsonController('/notification')
 @UseBefore(passportJwtMiddleware)
 export class NotificationController {
   @Get()
   public async get(@QueryParams() query: Pagination, @CurrentUser() user: IUser) {
-    const notifications = NotificationModel.find({ receiver: user.id })
-      .sort({ createdAt: -1 })
-      .limit(query.take)
-      .skip(query.skip)
+    const notifications = NotificationModel.paginate({ receiver: user.id }, { sort: { createdAt: -1 }, limit: query.take, offset: query.skip })
+    return notifications
   }
 
   @Put('/:id')
   @UseBefore(policyCheck(BASE_POLICY_NAMES.UPDATE, NotificationPolicy))
   public async openNotification(@Req() request: INotificationRequest) {
     request.notification.openedAt = new Date()
+    return { message: 'Opened' }
   }
 }

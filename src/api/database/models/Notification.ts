@@ -1,6 +1,7 @@
 import { Document, Schema, model } from 'mongoose'
 import { ModelName } from '../../../constants/ModelName'
 import { IUser } from './User'
+import mongoosePaginate = require('mongoose-paginate')
 
 export interface INotification extends Document {
   text: string
@@ -29,9 +30,10 @@ const notificationSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    openedAt: { type: Date, required: false},
+    openedAt: { type: Date, required: false },
   },
   { timestamps: true },
 )
+notificationSchema.plugin(mongoosePaginate)
 
 export const NotificationModel = model<INotification>(ModelName.NOTIFICATION, notificationSchema)

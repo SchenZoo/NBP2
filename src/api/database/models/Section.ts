@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose'
 import { ModelName } from '../../../constants/ModelName'
 import { IUser } from './User'
+import mongoosePaginate = require('mongoose-paginate')
 
 export interface ISection extends Document {
   name: string
@@ -16,5 +17,6 @@ const sectionSchema = new Schema(
   },
   { timestamps: true },
 )
+sectionSchema.plugin(mongoosePaginate)
 
 export const SectionModel = mongoose.model<ISection>(ModelName.SECTION, sectionSchema)

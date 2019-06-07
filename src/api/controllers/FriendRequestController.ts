@@ -3,41 +3,41 @@ import { passportJwtMiddleware } from '../middlewares/PassportJwtMiddleware'
 import { Pagination } from '../misc/QueryPagination'
 import { IUser } from '../database/models/User'
 import { FriendRequestModel } from '../database/models/FriendRequest'
-import { IsUppercase } from 'class-validator'
 import { ConflictError } from '../errors/ConflictError'
-import { NotificationModel } from '../database/models/Notification'
-import { USER_PROFILE } from '../../constants/AppRoutes'
+import { NotificationRepository } from '../repositories/NotificationRepository'
+import { FriendshipModel } from '../database/models/Friendship'
 
 @JsonController('/friend_requests')
 @UseBefore(passportJwtMiddleware)
 export class FriendRequestController {
+  constructor(private notifyRepo: NotificationRepository) {}
   @Get()
   public async getAll(@QueryParams() query: Pagination, @CurrentUser() user: IUser) {
-    const frequests = FriendRequestModel.find({ receiver: user.id })
-      .sort({ createdAt: -1 })
-      .limit(query.take)
-      .skip(query.skip)
-    return frequests
+    return FriendRequestModel.paginate({ receiver: user.id }, { sort: { createdAt: -1 }, limit: query.take, offset: query.skip })
+  }
+
+  @Get('/sent')
+  public async getAllSentRequests(@QueryParams() query: Pagination, @CurrentUser() user: IUser) {
+    return FriendRequestModel.paginate({ sender: user.id }, { sort: { createdAt: -1 }, limit: query.take, offset: query.skip })
   }
 
   @Post('/:id')
   public async create(@CurrentUser() user: IUser, @Param('id') id: string) {
-    const friendship = await FriendRequestModel.find().or([{ sender: id, receiver: user.id }, { sender: user.id, receiver: id }])
+    const friendRequest = await FriendRequestModel.findOne().or([{ sender: id, receiver: user.id }, { sender: user.id, receiver: id }])
 
-    if (!friendship) {
-      const notify = new NotificationModel({ text: 'Imate novi friend request.', relativeLink: USER_PROFILE(user.id), emitter: user.id, receiver: id }).save()
-      return await new FriendRequestModel({ sender: user.id, receiver: id })
-    } else {
+    if (friendRequest) {
+      throw new ConflictError('Vec je poslat zahtev.')
+    }
+    const friendship = await FriendshipModel.findOne().or([{ mario: user.id, luigi: id }, { mario: id, luigi: user.id }])
+    if (friendship) {
       throw new ConflictError('Vec su ortaci.')
     }
+    this.notifyRepo.saveViaUser(`Imate novi friend request od ${user.username}.`, user, id)
+    return await new FriendRequestModel({ sender: user.id, receiver: id }).save()
   }
 
   @Delete('/:id')
   public async delete(@CurrentUser() user: IUser, @Param('id') id: string) {
-    const friendship = await FriendRequestModel.findOne({ id })
-
-    if (friendship) {
-      return friendship.remove()
-    }
+    return FriendRequestModel.findByIdAndDelete(id)
   }
 }

@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose'
 import { ModelName } from '../../../constants/ModelName'
 import { IUser } from './User'
+import mongoosePaginate = require('mongoose-paginate')
 
 export interface IRemindable extends Document {
   usersToRemind: IUser
@@ -18,5 +19,6 @@ const reminderSchema = new Schema(
   },
   { timestamps: true },
 )
+reminderSchema.plugin(mongoosePaginate)
 
 export const ReminderModel = mongoose.model<IRemindable>(ModelName.REMINDER, reminderSchema)

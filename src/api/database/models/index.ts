@@ -10,6 +10,7 @@ import { ReminderModel } from './Reminder'
 import { ReportTicketModel } from './ReportTicket'
 import { SectionModel } from './Section'
 import { UserModel } from './User'
+import { WebPushSubModel } from './WebPushSubscription'
 
 const chatSession = new ChatSessionModel()
 const eventModel = new EventModel()
@@ -23,13 +24,4 @@ const aReportTicketModel = new ReportTicketModel()
 const aSectionModel = new SectionModel()
 const aUserModel = new UserModel()
 const CommentModela = new CommentModel()
-
-// FriendRequestModel
-// FriendshipModel
-// MessageModel
-// NotificationModel
-// PostModel
-// ReminderModel
-// ReportTicketModel
-// SectionModel
-// UserModel
+const wbps = new WebPushSubModel()

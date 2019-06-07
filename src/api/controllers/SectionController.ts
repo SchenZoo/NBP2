@@ -21,7 +21,7 @@ export class SectionController {
   @UseBefore(passportJwtMiddleware, checkRole([RoleNames.ADMIN]))
   public async create(@Body() section: SectionValidation, @CurrentUser() user: IUser) {
     section.creator = user
-    section.imageUrl = await this.fileService.addBase64Image(section.imageUrl, ModelImagePath.SECTION)
+    section.imageUrl = await this.fileService.addBase64Image(section.imageBase64, ModelImagePath.SECTION)
     return new SectionModel(section).save()
   }
 
@@ -51,7 +51,7 @@ export class SectionController {
     if (!section) {
       throw new ObjectFromParamNotFound('Section', id)
     }
-    await this.fileService.removeFile(this.fileService.IMAGE_PUBLIC_PATH + section.imageUrl)
+    await this.fileService.removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + section.toObject({ getters: false }).imageUrl))
     return SectionModel.deleteOne({ id })
   }
 }

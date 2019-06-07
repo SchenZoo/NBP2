@@ -1,13 +1,14 @@
-import { IsString, IsNotEmpty } from 'class-validator'
+import { IsString, IsNotEmpty, IsBase64 } from 'class-validator'
 import { IUser } from '../database/models/User'
 
 export class SectionValidation {
   @IsString()
   @IsNotEmpty()
   name: string
-
-  @IsString()
   @IsNotEmpty()
+  @IsBase64()
+  imageBase64: string
+
   imageUrl: string
 
   creator: IUser
