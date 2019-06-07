@@ -13,7 +13,10 @@ import { INotificationRequest } from '../app_models/requests/INotificationReques
 export class NotificationController {
   @Get()
   public async get(@QueryParams() query: Pagination, @CurrentUser() user: IUser) {
-    const notifications = NotificationModel.paginate({ receiver: user.id }, { sort: { createdAt: -1 }, limit: query.take, offset: query.skip })
+    const notifications = NotificationModel.paginate(
+      { receiver: user.id },
+      { sort: { createdAt: -1 }, limit: query.take, offset: query.skip, populate: 'emitter' },
+    )
     return notifications
   }
 
@@ -21,6 +24,7 @@ export class NotificationController {
   @UseBefore(policyCheck(BASE_POLICY_NAMES.UPDATE, NotificationPolicy))
   public async openNotification(@Req() request: INotificationRequest) {
     request.notification.openedAt = new Date()
+    request.notification.save()
     return { message: 'Opened' }
   }
 }

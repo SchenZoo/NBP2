@@ -36,6 +36,23 @@ export class FriendRequestController {
     return await new FriendRequestModel({ sender: user.id, receiver: id }).save()
   }
 
+  @Post('/:id/accept')
+  public async acceptFriendRequest(@CurrentUser() user: IUser, @Param('id') id: string) {
+    const friendRequest = await FriendRequestModel.findOne({ $or: [{ sender: id, receiver: user.id }, { sender: user.id, receiver: id }] })
+    if (friendRequest) {
+      friendRequest.remove()
+      const friendship = await FriendshipModel.findOne().or([{ mario: user.id, luigi: id }, { mario: id, luigi: user.id }])
+      if (!friendship) {
+        this.notifyRepo.saveViaUser(`${user.username} je prihvatio zahtev za prijateljstvo.`, user, id)
+        return await new FriendshipModel({ mario: id, luigi: user.id }).save()
+      } else {
+        throw new ConflictError('Bratici mario i luigi su vec braca prijatelji!')
+      }
+    } else {
+      throw new ConflictError('No friend request sent.')
+    }
+  }
+
   @Delete('/:id')
   public async delete(@CurrentUser() user: IUser, @Param('id') id: string) {
     return FriendRequestModel.findByIdAndDelete(id)

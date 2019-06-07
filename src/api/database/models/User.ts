@@ -9,7 +9,7 @@ export interface IUser extends Document {
   password: string
   email: string
   roles: string[]
-  imageUrl: string
+  imageURL: string
   hasRoles(role: string[]): boolean
   checkPassword(password: string): boolean
 }
@@ -30,7 +30,7 @@ const userSchema = new Schema(
       type: String,
     },
     roles: [String],
-    imageUrl: {
+    imageURL: {
       type: String,
       default: DefaultImage.USER_PROFILE,
       get: url => `${process.env.APP_HOST}:${process.env.APP_PORT}/public/${url}`,

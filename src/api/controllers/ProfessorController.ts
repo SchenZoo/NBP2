@@ -18,7 +18,10 @@ export class ProfessorController {
   constructor(private fileService: FileService) {}
   @Get()
   public async get(@QueryParams() query: PaginationSearch) {
-    return UserModel.paginate({ username: { $regex: `${query.name ? query.name : ''}` }, roles: 'Professor' }, { limit: query.take, offset: query.skip })
+    return UserModel.paginate(
+      { username: { $regex: `${query.name ? query.name : ''}` }, roles: RoleNames.PROFESSOR },
+      { limit: query.take, offset: query.skip, sort: { createdAt: -1 } },
+    )
   }
 
   @Post()
@@ -26,7 +29,7 @@ export class ProfessorController {
     professor.roles = [RoleNames.PROFESSOR]
     professor.password = hashPassowrd(professor.password)
     if (professor.imageBase64) {
-      professor.imageUrl = await this.fileService.addBase64Image(professor.imageBase64, ModelImagePath.USER_PROFILE)
+      professor.imageURL = await this.fileService.addBase64Image(professor.imageBase64, ModelImagePath.USER_PROFILE)
     }
 
     return await new UserModel(professor).save()
@@ -42,12 +45,12 @@ export class ProfessorController {
       if (!professor) {
         throw new ObjectFromParamNotFound('User', id)
       }
-      if (!professor.imageUrl.includes(DefaultImage.USER_PROFILE)) {
-        await this.fileService.removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + professor.imageUrl))
+      if (!professor.imageURL.includes(DefaultImage.USER_PROFILE)) {
+        await this.fileService.removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + professor.imageURL))
       }
-      newProfa.imageUrl = await this.fileService.addBase64Image(newProfa.imageBase64, ModelImagePath.USER_PROFILE)
+      newProfa.imageURL = await this.fileService.addBase64Image(newProfa.imageBase64, ModelImagePath.USER_PROFILE)
     }
-    return UserModel.updateOne({ id }, newProfa)
+    return UserModel.findByIdAndUpdate(id, newProfa, { new: true })
   }
 
   @Delete('/:id')
@@ -56,9 +59,9 @@ export class ProfessorController {
     if (!professor) {
       throw new ObjectFromParamNotFound('User', id)
     }
-    if (!professor.imageUrl.includes(DefaultImage.USER_PROFILE)) {
+    if (!professor.imageURL.includes(DefaultImage.USER_PROFILE)) {
       this.fileService
-        .removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + professor.toObject({ getters: false }).imageUrl))
+        .removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + professor.toObject({ getters: false }).imageURL))
         .catch(error => console.error(error))
     }
     return professor.remove()

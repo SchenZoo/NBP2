@@ -11,7 +11,7 @@ export interface IMessage extends Document {
   sender: IUser | number
   data?: IEvent | IPost
   onModel?: string
-  session: number | IChatSession
+  session: string | IChatSession
 }
 
 const messageSchema = new Schema(

@@ -1,10 +1,30 @@
-import { IsOptional, IsString, IsNotEmpty } from 'class-validator'
+import { IsOptional, IsString, IsNotEmpty, IsEnum, ValidateNested, IsDate } from 'class-validator'
+import { PostTypes } from '../database/models/Post'
+import { Type } from 'class-transformer'
 
-export class PostValidator {
+export class PostObjectValidator {
   @IsNotEmpty()
   @IsString()
   title: string
   @IsNotEmpty()
   @IsString()
-  description: string
+  text: string
+  @IsOptional()
+  @IsDate()
+  startAt: Date
+  @IsOptional()
+  @IsDate()
+  endsAt: Date
+
+  section: string
+  user: string
+}
+
+export class PostValidator {
+  @IsNotEmpty()
+  @IsEnum(PostTypes)
+  type: PostTypes
+  @Type(() => PostObjectValidator)
+  @ValidateNested({})
+  post: PostObjectValidator
 }

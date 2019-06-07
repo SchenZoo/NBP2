@@ -16,6 +16,6 @@ export class UserValidator {
   @IsBase64()
   imageBase64: string
 
-  imageUrl: string
+  imageURL: string
   roles: string[]
 }

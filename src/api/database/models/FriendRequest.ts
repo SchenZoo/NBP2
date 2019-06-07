@@ -4,8 +4,8 @@ import { IUser } from './User'
 import mongoosePaginate = require('mongoose-paginate')
 
 export interface IFriendRequest extends Document {
-  sender: IUser | number
-  receiver: IUser | number
+  sender: IUser | string
+  receiver: IUser | string
 }
 
 const friendRequestSchema = new Schema(

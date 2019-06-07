@@ -13,13 +13,13 @@ import {
   Params,
   Req,
   Controller,
+  HttpError,
 } from 'routing-controllers'
 import { passportJwtMiddleware } from '../middlewares/PassportJwtMiddleware'
 import { Pagination } from '../misc/QueryPagination'
-import { PostModel, PostTypes } from '../database/models/Post'
+import { PostModel, PostTypes, TextPostModel } from '../database/models/Post'
 import { checkRole, policyCheck } from '../middlewares/AuthorizationMiddlewares'
 import { RoleNames } from '../../constants/RoleNames'
-import { PostValidator } from '../validators/PostValidator'
 import { BASE_POLICY_NAMES } from '../policy/BasePolicy'
 import { PostPolicy } from '../policy/PostPolicy'
 import { EventModel } from '../database/models/Event'
@@ -30,6 +30,7 @@ import { CommentValidator } from '../validators/CommentValidator'
 import { ModelImagePath } from '../../constants/ModelImagePath'
 import { FileService } from '../services/FileService'
 import { plainToClass } from 'class-transformer'
+import { PostValidator } from '../validators/PostValidator'
 
 @JsonController('/post')
 export class PostController {
@@ -48,8 +49,13 @@ export class PostController {
       offset: query.skip,
       populate: {
         path: 'comments',
-        populate: 'creator',
+        populate: 'user',
       },
+    })
+    data.docs.forEach(post => {
+      if (post.comments) {
+        post.comments.reverse()
+      }
     })
     return data
   }
@@ -57,17 +63,15 @@ export class PostController {
   @Post('/:id')
   @UseBefore(checkRole([RoleNames.PROFESSOR, RoleNames.ADMIN]))
   @UseBefore(passportJwtMiddleware)
-  public async create(
-    @BodyParam('post', { validate: false, required: true }) post: any,
-    @BodyParam('type', { required: true }) type: string,
-    @Param('id') id: string,
-    @CurrentUser() user: IUser,
-  ) {
-    post.creator = user
+  public async create(@Body() body: PostValidator, @Param('id') id: string, @CurrentUser() user: IUser) {
+    const post = body.post
+    post.user = user.id
     post.section = id
-    switch (type) {
+    switch (body.type) {
       case PostTypes.EVENT:
         return await new EventModel(post).save()
+      case PostTypes.TEXT_POST:
+        return await new TextPostModel(post).save()
       default:
         return await new PostModel(post).save()
     }
@@ -77,16 +81,15 @@ export class PostController {
   @UseBefore(policyCheck(BASE_POLICY_NAMES.UPDATE, PostPolicy))
   @UseBefore(checkRole([RoleNames.PROFESSOR, RoleNames.ADMIN]))
   @UseBefore(passportJwtMiddleware)
-  public async update(
-    @BodyParam('post', { validate: false, required: true }) post: any,
-    @BodyParam('type', { required: true }) type: string,
-    @Param('id') id: string,
-  ) {
-    switch (type) {
+  public async update(@Body() body: PostValidator, @Param('id') id: string) {
+    const post = body.post
+    switch (body.type) {
       case PostTypes.EVENT:
-        return EventModel.updateOne({ id }, post)
+        return EventModel.findByIdAndUpdate(id, post, { new: true })
+      case PostTypes.TEXT_POST:
+        return TextPostModel.findByIdAndUpdate(id, post, { new: true })
       default:
-        return PostModel.updateOne({ id }, post)
+        throw new HttpError(500, 'This is bugish  :)')
     }
   }
 
@@ -95,15 +98,26 @@ export class PostController {
   @UseBefore(checkRole([RoleNames.PROFESSOR, RoleNames.ADMIN]))
   @UseBefore(passportJwtMiddleware)
   public async delete(@Param('id') id: string) {
-    return PostModel.deleteOne({ id })
+    return PostModel.findByIdAndDelete(id)
   }
 
   @Post('/:id/comment')
   @UseBefore(passportJwtMiddleware)
-  public async addComment(@CurrentUser() user: IUser, @Body() comment: CommentValidator, @Param('id') id: number) {
+  public async addComment(@CurrentUser() user: IUser, @Body() comment: CommentValidator, @Param('id') id: string) {
     if (comment.imageBase64) {
-      comment.imageUrl = await this.fileService.addBase64Image(comment.imageBase64, ModelImagePath.USER_PROFILE)
+      comment.imageURL = await this.fileService.addBase64Image(comment.imageBase64, ModelImagePath.USER_PROFILE)
     }
-    return new CommentModel({ text: comment.text, creator: user, modelName: ModelName.POST, commented: id, imageUrl: comment.imageUrl } as IComment).save()
+    return new CommentModel({ text: comment.text, user, modelName: ModelName.POST, commented: id, imageURL: comment.imageURL } as IComment).save()
+  }
+
+  @Get('/:id/comment')
+  @UseBefore(passportJwtMiddleware)
+  public async getComments(@Param('id') id: string, @QueryParams() query: Pagination) {
+    const comments = await CommentModel.paginate(
+      { commented: id, onModel: ModelName.POST },
+      { limit: query.take, offset: query.skip, populate: 'user', sort: { createdAt: -1 } },
+    )
+    comments.docs.reverse()
+    return comments
   }
 }

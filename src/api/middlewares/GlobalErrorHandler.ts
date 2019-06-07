@@ -3,6 +3,7 @@ import { ConflictError } from '../errors/ConflictError'
 import { Request, Response } from 'express'
 import { MongoError } from 'mongodb'
 import { ValidationError } from 'class-validator'
+import { ObjectFromParamNotFound } from '../errors/ObjectFromParamNotFound'
 
 @Middleware({ type: 'after' })
 export class GlobalErrorHandler implements ExpressErrorMiddlewareInterface {
@@ -22,6 +23,9 @@ export class GlobalErrorHandler implements ExpressErrorMiddlewareInterface {
         response.status(403)
         break
       case NotFoundError:
+        response.status(404)
+        break
+      case ObjectFromParamNotFound:
         response.status(404)
         break
       case ConflictError:

@@ -6,8 +6,8 @@ import { PostModel, POST_DISCRIMINATOR_KEY, PostTypes } from './Post'
 
 export interface IEvent extends Document {
   title: string
-  description: string
-  creator: IUser | number
+  text: string
+  user: IUser | string
   location?: ILocation
   startsAt?: Date
   endsAt?: Date
@@ -15,9 +15,6 @@ export interface IEvent extends Document {
 
 const eventSchema = new Schema(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    creator: { type: Schema.Types.ObjectId, ref: ModelName.USER },
     startsAt: { type: Date, required: false },
     endsAt: { type: Date, required: false },
     location: locationSchema,

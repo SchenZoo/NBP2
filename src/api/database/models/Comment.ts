@@ -7,10 +7,10 @@ import mongoosePaginate = require('mongoose-paginate')
 
 export interface IComment extends Document {
   text: string
-  creator: IUser | number
-  commented: IPost | IEvent | number
+  user: IUser | string
+  commented: IPost | IEvent | string
   onModel: Commentable
-  imageUrl: string
+  imageURL: string
 }
 
 export enum Commentable {
@@ -20,14 +20,14 @@ export enum Commentable {
 export const commentSchema = new Schema(
   {
     text: { type: String, required: true },
-    creator: { type: Schema.Types.ObjectId, ref: 'User' },
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
     onModel: { type: String, required: true },
     commented: {
       type: Schema.Types.ObjectId,
       required: true,
       refPath: 'onModel',
     },
-    imageUrl: {
+    imageURL: {
       type: String,
       get: url => (url ? `${process.env.APP_HOST}:${process.env.APP_PORT}/public/${url}` : null),
     },

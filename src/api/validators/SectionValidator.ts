@@ -9,7 +9,7 @@ export class SectionValidation {
   @IsBase64()
   imageBase64: string
 
-  imageUrl: string
+  imageURL: string
 
-  creator: IUser
+  user: IUser
 }

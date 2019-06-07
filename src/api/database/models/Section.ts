@@ -5,15 +5,15 @@ import mongoosePaginate = require('mongoose-paginate')
 
 export interface ISection extends Document {
   name: string
-  creator: IUser | number
-  imageUrl: string
+  user: IUser | string
+  imageURL: string
 }
 
 const sectionSchema = new Schema(
   {
     name: { type: String, required: true },
-    creator: { type: Schema.Types.ObjectId, ref: ModelName.USER },
-    imageUrl: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: ModelName.USER },
+    imageURL: { type: String, required: true },
   },
   { timestamps: true },
 )

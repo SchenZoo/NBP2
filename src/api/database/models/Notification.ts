@@ -6,8 +6,8 @@ import mongoosePaginate = require('mongoose-paginate')
 export interface INotification extends Document {
   text: string
   relativeLink: string
-  emitter: IUser | number
-  receiver: IUser | number
+  emitter: IUser | string
+  receiver: IUser | string
   openedAt: Date
 }
 

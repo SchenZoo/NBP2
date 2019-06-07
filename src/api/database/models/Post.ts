@@ -8,10 +8,11 @@ import mongoosePaginate = require('mongoose-paginate')
 
 export interface IPost extends Document {
   title: string
-  description: string
-  creator: IUser | number
+  text: string
+  user: IUser | string
   comments?: IComment[]
-  section: ISection | number
+  section: ISection | string
+  __t: string
 }
 
 export const POST_DISCRIMINATOR_KEY = 'type'
@@ -23,8 +24,8 @@ export enum PostTypes {
 const postSchema = new Schema(
   {
     title: { type: String, required: true },
-    description: { type: String, required: true },
-    creator: { type: Schema.Types.ObjectId, ref: ModelName.USER },
+    text: { type: String, required: true },
+    user: { type: Schema.Types.ObjectId, ref: ModelName.USER },
     section: { type: Schema.Types.ObjectId, ref: ModelName.SECTION },
   },
   {
@@ -45,3 +46,5 @@ postSchema.virtual('comments', {
 })
 
 export const PostModel = mongoose.model<IPost>(ModelName.POST, postSchema)
+
+export const TextPostModel = PostModel.discriminator<IPost>(PostTypes.TEXT_POST, new Schema())

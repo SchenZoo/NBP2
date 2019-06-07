@@ -4,7 +4,7 @@ import { ModelName } from '../../../constants/ModelName'
 
 export interface IWebPushSubscription extends Document {
   token: string
-  user: IUser | number
+  user: IUser | string
 }
 
 export const webPushSubSchema = new Schema(

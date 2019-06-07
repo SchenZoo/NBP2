@@ -20,8 +20,8 @@ export class SectionController {
   @Post()
   @UseBefore(passportJwtMiddleware, checkRole([RoleNames.ADMIN]))
   public async create(@Body() section: SectionValidation, @CurrentUser() user: IUser) {
-    section.creator = user
-    section.imageUrl = await this.fileService.addBase64Image(section.imageBase64, ModelImagePath.SECTION)
+    section.user = user
+    section.imageURL = await this.fileService.addBase64Image(section.imageBase64, ModelImagePath.SECTION)
     return new SectionModel(section).save()
   }
 
@@ -32,15 +32,15 @@ export class SectionController {
     @Body({ validate: { skipMissingProperties: true, whitelist: true }, required: true }) section: SectionValidation,
     @Param('id') id: string,
   ) {
-    if (section.imageUrl) {
+    if (section.imageURL) {
       const oldSection = await SectionModel.findById(id)
       if (!oldSection) {
         throw new ObjectFromParamNotFound('Section', id)
       }
-      await this.fileService.removeFile(this.fileService.IMAGE_PUBLIC_PATH + oldSection.imageUrl)
-      section.imageUrl = await this.fileService.addBase64Image(section.imageUrl, ModelImagePath.SECTION)
+      await this.fileService.removeFile(this.fileService.IMAGE_PUBLIC_PATH + oldSection.imageURL)
+      section.imageURL = await this.fileService.addBase64Image(section.imageURL, ModelImagePath.SECTION)
     }
-    return SectionModel.updateOne({ id }, section)
+    return SectionModel.findByIdAndUpdate(id, section, { new: true })
   }
 
   @Delete('/:id')
@@ -51,7 +51,7 @@ export class SectionController {
     if (!section) {
       throw new ObjectFromParamNotFound('Section', id)
     }
-    await this.fileService.removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + section.toObject({ getters: false }).imageUrl))
+    await this.fileService.removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + section.toObject({ getters: false }).imageURL))
     return SectionModel.deleteOne({ id })
   }
 }
