@@ -6,6 +6,7 @@ import mongoosePaginate = require('mongoose-paginate')
 
 export interface IUser extends Document {
   username: string
+  name: string
   password: string
   email: string
   roles: string[]
@@ -29,11 +30,11 @@ const userSchema = new Schema(
     email: {
       type: String,
     },
+    name: String,
     roles: [String],
     imageURL: {
       type: String,
-      default: DefaultImage.USER_PROFILE,
-      get: url => `${process.env.APP_HOST}:${process.env.APP_PORT}/public/${url}`,
+      get: url => (url ? `${process.env.APP_HOST}:${process.env.APP_PORT}/public/images/${url}` : null),
     },
   },
   { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } },

@@ -25,6 +25,10 @@ export class ChatMessageValidator {
   @IsString()
   public data: string
 
+  @IsOptional()
+  @IsString()
+  ref: string
+
   files: string[]
   sender: number
   session: number

@@ -13,8 +13,11 @@ export class UserValidator {
   @IsEmail()
   email: string
   @IsOptional()
-  @IsBase64()
+  @IsString()
   imageBase64: string
+  @IsOptional()
+  @IsString()
+  name: string
 
   imageURL: string
   roles: string[]

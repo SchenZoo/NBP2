@@ -22,6 +22,7 @@ export class AuthController {
             expiresIn: '31d',
           })
           foundUser.password = ''
+          console.log(foundUser)
           return { token, user: foundUser }
         } else {
           return { message: 'Login failed.' }

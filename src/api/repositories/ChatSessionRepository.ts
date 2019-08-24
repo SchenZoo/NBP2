@@ -9,7 +9,7 @@ export class ChatSessionRepository {
   }
 
   public async getSessionMessagesPaginated(sessionId: number, skip = 0, take = 20) {
-    const paginatedMessage = await MessageModel.paginate({ session: sessionId }, { limit: take, offset: skip, sort: { createdAt: -1 } })
+    const paginatedMessage = await MessageModel.paginate({ session: sessionId }, { limit: take, offset: skip, sort: { createdAt: -1 }, populate: 'data' })
     paginatedMessage.docs.reverse()
     return paginatedMessage
   }

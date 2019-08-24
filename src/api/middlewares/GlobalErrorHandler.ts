@@ -35,6 +35,9 @@ export class GlobalErrorHandler implements ExpressErrorMiddlewareInterface {
         response.status(422)
         break
       case MongoError:
+        if (error.code === 11000) {
+          return response.status(409).json({ message: error.errmsg })
+        }
         console.log(error)
         return response.status(500).json({ message: 'Database error' })
       default:

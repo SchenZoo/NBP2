@@ -12,6 +12,7 @@ export interface IMessage extends Document {
   data?: IEvent | IPost
   onModel?: string
   session: string | IChatSession
+  ref?: string
 }
 
 const messageSchema = new Schema(
@@ -32,8 +33,9 @@ const messageSchema = new Schema(
     session: { type: Schema.Types.ObjectId, ref: ModelName.CHAT_SESSION, required: true },
     files: {
       type: [String],
-      get: (urls: string[]) => urls.map(url => `${process.env.APP_HOST}:${process.env.APP_PORT}/public/${url}`),
+      get: (urls: string[]) => urls.map(url => `${process.env.APP_HOST}:${process.env.APP_PORT}/public/images/${url}`),
     },
+    ref: String,
   },
   { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } },
 )
@@ -43,5 +45,4 @@ export const MessageModel = mongoose.model<IMessage>(ModelName.MESSAGE, messageS
 
 export enum MessageDataModels {
   Post = 'Post',
-  Event = 'Event',
 }

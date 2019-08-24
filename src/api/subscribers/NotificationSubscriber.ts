@@ -4,7 +4,7 @@ import { WebPushNotificationService } from '../services/WebPushNotificationServi
 import Container from 'typedi'
 import { INotificationSent } from '../app_models/event_dispatch/INotificationSent'
 import { SocketEventNames } from '../../constants/SocketEventNames'
-import { getMessageRoom } from '../../constants/SocketRoomNames'
+import { getUserRoom } from '../../constants/SocketRoomNames'
 import { EmailService } from '../services/EmailService'
 
 @EventSubscriber()
@@ -30,7 +30,7 @@ export class NotificationSubscriber {
 
     this.webPushService.sendWebPushNotification(payload, body.receiverId)
     // SENDING VIA SOCKET
-    this.socketService.sendEventInRoom(SocketEventNames.NOTIFICATION, body.notification, getMessageRoom(body.receiverId))
+    this.socketService.sendEventInRoom(SocketEventNames.NOTIFICATION, body.notification, getUserRoom(body.receiverId))
     // SENDING EMAIL
     this.emailService.sendEmail(body.receiverId, 'Nova notifikacija od ' + body.userFrom.username, body.notification.text)
   }

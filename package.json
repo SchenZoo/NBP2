@@ -10,7 +10,8 @@
     "stop": "forever --killSignal=SIGKILL stop build/server.js",
     "clear": "truncate -s 0 forever.log && truncate -s 0 error.log && truncate -s 0 output.log",
     "dev": "npx ts-node-dev --respawn --transpileOnly src/server.ts nodemon /src",
-    "admin-seeder": "npx ts-node-dev --transpileOnly src/api/database/seeders/AdminSeeder.ts"
+    "admin-seeder": "npx ts-node-dev --transpileOnly src/api/database/seeders/AdminSeeder.ts",
+    "section-seeder": "npx ts-node-dev --transpileOnly src/api/database/seeders/SectionSeeder.ts"
   },
   "author": "Stankovic Aleksandar",
   "license": "ISC",
@@ -44,6 +45,7 @@
     "@types/cron": "^1.7.1",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.16.1",
+    "@types/faker": "^4.1.5",
     "@types/md5": "^2.1.33",
     "@types/mime": "^2.0.1",
     "@types/mongoose": "^5.5.3",

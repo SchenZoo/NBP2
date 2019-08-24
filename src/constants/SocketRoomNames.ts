@@ -1,1 +1,1 @@
-export const getMessageRoom = receiverId => 'user-' + receiverId
+export const getUserRoom = receiverId => 'user-' + receiverId

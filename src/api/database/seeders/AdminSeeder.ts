@@ -1,38 +1,37 @@
 import { UserModel, IUser } from '../models/User'
 import { RoleNames } from '../../../constants/RoleNames'
-import mongoose = require('mongoose')
-import 'reflect-metadata'
-import dotenv = require('dotenv')
-import path = require('path')
-dotenv.config({ path: path.resolve('.env') })
-import { MONGO_URL, MONGO_CONNECTION_OPTIONS } from '../../../config/MongoDBOptions'
 import { hashPassowrd } from '../../misc/Hash'
+import { ISeeder } from './Seeder'
 
-function main() {
-  ;(async () => {
+export class AdminSeeder implements ISeeder {
+  public log: boolean
+  constructor(log: boolean = false) {
+    this.log = log
+  }
+  public async seed() {
     const admin = new UserModel({
       username: 'Admin',
+      name: 'Stane',
       password: hashPassowrd('asdlolasd'),
       roles: [RoleNames.ADMIN],
       email: 'stankovic.aleksandar@elfak.rs',
     } as IUser)
     try {
-      console.log(await admin.save(), 'created')
-      process.exit(0)
+      await admin.save()
+      if (this.log) {
+        console.log('Admin created')
+        return true
+      }
     } catch (err) {
-      console.log(err)
-      console.log('You have already created this user')
-      process.exit(0)
+      if (this.log) {
+        console.error(err)
+        console.log('You have already created this user')
+      }
     }
-  })()
+    return false
+  }
 }
 
-mongoose
-  .connect(MONGO_URL, MONGO_CONNECTION_OPTIONS)
-  .then(res => {
-    main()
-  })
-  .catch(err => {
-    console.log(err)
-    console.error('Database connection error')
-  })
+new AdminSeeder(true).seed().then(res => {
+  process.exit(0)
+})

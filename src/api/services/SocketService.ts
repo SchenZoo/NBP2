@@ -3,6 +3,7 @@ import socket, { Server } from 'socket.io'
 import { StoppableServer } from 'stoppable'
 import { IUser } from '../database/models/User'
 import jwt = require('jsonwebtoken')
+import { getUserRoom } from '../../constants/SocketRoomNames'
 
 @Service()
 export class SocketService {
@@ -30,7 +31,7 @@ export class SocketService {
         return socketClient.disconnect(true)
       }
 
-      socketClient.join('user-' + user.id)
+      socketClient.join(getUserRoom(user.id))
       socketClient.on('disconnect', this.onDisconnect(user.id))
     }
   }

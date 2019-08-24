@@ -5,7 +5,7 @@ import { WebPushNotificationService } from '../services/WebPushNotificationServi
 import { IPrivateMessageSent } from '../app_models/event_dispatch/IPrivateMessageSent'
 import { ChatSessionModel } from '../database/models/ChatSession'
 import { SocketEventNames } from '../../constants/SocketEventNames'
-import { getMessageRoom } from '../../constants/SocketRoomNames'
+import { getUserRoom } from '../../constants/SocketRoomNames'
 import { getChatLink } from '../misc/Links'
 import { MessageModel, IMessage } from '../database/models/Message'
 
@@ -27,16 +27,17 @@ export class MessageSubscriber {
       if (body.message.data) {
         message = (await MessageModel.findById(body.message.id).populate('data')) as IMessage
       }
-
-      this.socketService.sendEventInRoom(
-        SocketEventNames.MESSAGE,
-        {
-          message,
-          session: body.session,
-          sessionsCount,
-        },
-        getMessageRoom(body.receiverId),
-      )
+      body.session.participants.forEach(participant => {
+        this.socketService.sendEventInRoom(
+          SocketEventNames.MESSAGE,
+          {
+            message,
+            session: body.session,
+            sessionsCount,
+          },
+          getUserRoom(participant.id),
+        )
+      })
     })()
     const payload = this.webPushService.makeWebPushNotification(
       body.sender.username + ' ti je poslao poruku',

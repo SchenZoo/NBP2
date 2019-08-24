@@ -33,6 +33,7 @@ export class MessageService {
       onModel: chatMessage.onModel,
       session: session.id,
       sender: sender.id,
+      ref: chatMessage.ref,
     }).save()
     const eventDispatcher = new EventDispatcher()
     eventDispatcher.dispatch('privateMessageSent', {

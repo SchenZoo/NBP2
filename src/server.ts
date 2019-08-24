@@ -8,6 +8,8 @@ import { app } from './app'
 import { AddressInfo } from 'net'
 import Container from 'typedi'
 import { SocketService } from './api/services/SocketService'
+import './api/subscribers/MessageSubscriber'
+import './api/subscribers/NotificationSubscriber'
 
 const server = stoppable(http.createServer(app))
 Container.set(SocketService, new SocketService(server))

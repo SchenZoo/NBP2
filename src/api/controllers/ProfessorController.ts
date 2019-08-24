@@ -7,7 +7,7 @@ import { UserModel } from '../database/models/User'
 import { UserValidator } from '../validators/UserValidator'
 import { hashPassowrd } from '../misc/Hash'
 import { FileService } from '../services/FileService'
-import { ModelImagePath } from '../../constants/ModelImagePath'
+import { ModelImagePath, getAbsoluteServerPath } from '../../constants/ModelImagePath'
 import { ObjectFromParamNotFound } from '../errors/ObjectFromParamNotFound'
 import { DefaultImage } from '../../constants/DefaultImages'
 
@@ -46,7 +46,7 @@ export class ProfessorController {
         throw new ObjectFromParamNotFound('User', id)
       }
       if (!professor.imageURL.includes(DefaultImage.USER_PROFILE)) {
-        await this.fileService.removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + professor.imageURL))
+        await this.fileService.removeFile(getAbsoluteServerPath(professor.toObject({ getters: false }).imageURL))
       }
       newProfa.imageURL = await this.fileService.addBase64Image(newProfa.imageBase64, ModelImagePath.USER_PROFILE)
     }
@@ -56,13 +56,11 @@ export class ProfessorController {
   @Delete('/:id')
   public async delete(@Param('id') id: string) {
     const professor = await UserModel.findById(id)
-    if (!professor) {
+    if (!professor || professor.hasRoles([RoleNames.ADMIN])) {
       throw new ObjectFromParamNotFound('User', id)
     }
-    if (!professor.imageURL.includes(DefaultImage.USER_PROFILE)) {
-      this.fileService
-        .removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + professor.toObject({ getters: false }).imageURL))
-        .catch(error => console.error(error))
+    if (professor.imageURL && !professor.imageURL.includes(DefaultImage.USER_PROFILE)) {
+      this.fileService.removeFile(getAbsoluteServerPath(professor.toObject({ getters: false }).imageURL)).catch(error => console.error(error))
     }
     return professor.remove()
   }

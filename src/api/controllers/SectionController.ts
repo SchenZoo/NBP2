@@ -6,7 +6,7 @@ import { SectionModel } from '../database/models/Section'
 import { SectionValidation } from '../validators/SectionValidator'
 import { IUser } from '../database/models/User'
 import { FileService } from '../services/FileService'
-import { ModelImagePath } from '../../constants/ModelImagePath'
+import { ModelImagePath, getAbsoluteServerPath, DEFAULT_IMAGE_PATH } from '../../constants/ModelImagePath'
 import { ObjectFromParamNotFound } from '../errors/ObjectFromParamNotFound'
 
 @JsonController('/section')
@@ -32,13 +32,13 @@ export class SectionController {
     @Body({ validate: { skipMissingProperties: true, whitelist: true }, required: true }) section: SectionValidation,
     @Param('id') id: string,
   ) {
-    if (section.imageURL) {
+    if (section.imageBase64) {
       const oldSection = await SectionModel.findById(id)
       if (!oldSection) {
         throw new ObjectFromParamNotFound('Section', id)
       }
-      await this.fileService.removeFile(this.fileService.IMAGE_PUBLIC_PATH + oldSection.imageURL)
-      section.imageURL = await this.fileService.addBase64Image(section.imageURL, ModelImagePath.SECTION)
+      await this.fileService.removeFile(getAbsoluteServerPath(oldSection.toObject({ getters: false }).imageURL))
+      section.imageURL = await this.fileService.addBase64Image(section.imageBase64, ModelImagePath.SECTION)
     }
     return SectionModel.findByIdAndUpdate(id, section, { new: true })
   }
@@ -51,7 +51,7 @@ export class SectionController {
     if (!section) {
       throw new ObjectFromParamNotFound('Section', id)
     }
-    await this.fileService.removeFile(this.fileService.getAbsolutePath(this.fileService.IMAGE_PUBLIC_PATH + section.toObject({ getters: false }).imageURL))
-    return SectionModel.deleteOne({ id })
+    await this.fileService.removeFile(getAbsoluteServerPath(section.toObject({ getters: false }).imageURL))
+    return SectionModel.findByIdAndDelete(id)
   }
 }
