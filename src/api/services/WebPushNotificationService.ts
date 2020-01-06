@@ -2,6 +2,7 @@ import { Service } from 'typedi'
 import admin = require('firebase-admin')
 import path = require('path')
 import { WebPushSubModel } from '../database/models/WebPushSubscription'
+import { API_PATH } from '../configurations/paths'
 
 @Service()
 export class WebPushNotificationService {
@@ -33,7 +34,7 @@ export class WebPushNotificationService {
       notification: {
         title,
         body,
-        icon: icon ? icon : `${process.env.APP_HOST}:${process.env.APP_PORT}/public/nodejslogo.png`,
+        icon: icon ? icon : `${API_PATH}/public/nodejslogo.png`,
         tag,
         clickAction: link,
         sound: 'default',

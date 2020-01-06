@@ -1,4 +1,5 @@
 import path = require('path')
+import { API_PATH } from '../api/configurations/paths'
 
 export enum ModelImagePath {
   SECTION = 'section',
@@ -9,6 +10,6 @@ export enum ModelImagePath {
 
 export const DEFAULT_IMAGE_PATH = 'public/images/'
 
-export const getModelImageUrl = imageName => `${process.env.APP_HOST}:${process.env.APP_PORT}/${DEFAULT_IMAGE_PATH}${imageName}`
+export const getModelImageUrl = imageName => `${API_PATH}/${DEFAULT_IMAGE_PATH}${imageName}`
 
 export const getAbsoluteServerPath = imageName => path.resolve(DEFAULT_IMAGE_PATH + imageName)

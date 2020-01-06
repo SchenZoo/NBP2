@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose'
 import { compareSync } from 'bcrypt'
 import { ModelName } from '../../../constants/ModelName'
-import { DefaultImage } from '../../../constants/DefaultImages'
 import mongoosePaginate = require('mongoose-paginate')
+import { getModelImageUrl } from '../../../constants/ModelImagePath'
 
 export interface IUser extends Document {
   username: string
@@ -34,7 +34,7 @@ const userSchema = new Schema(
     roles: [String],
     imageURL: {
       type: String,
-      get: url => (url ? `${process.env.APP_HOST}:${process.env.APP_PORT}/public/images/${url}` : null),
+      get: imageName => getModelImageUrl(imageName),
     },
   },
   { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } },

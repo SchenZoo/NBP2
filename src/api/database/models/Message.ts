@@ -5,6 +5,7 @@ import { IEvent } from './Event'
 import { IPost } from './Post'
 import { IChatSession } from './ChatSession'
 import mongoosePaginate = require('mongoose-paginate')
+import { getModelImageUrl } from '../../../constants/ModelImagePath'
 
 export interface IMessage extends Document {
   text?: string
@@ -21,7 +22,7 @@ const messageSchema = new Schema(
     sender: { type: Schema.Types.ObjectId, ref: ModelName.USER },
     onModel: {
       type: String,
-      required: function() {
+      required() {
         return (this as any).data !== undefined
       },
     },
@@ -33,7 +34,7 @@ const messageSchema = new Schema(
     session: { type: Schema.Types.ObjectId, ref: ModelName.CHAT_SESSION, required: true },
     files: {
       type: [String],
-      get: (urls: string[]) => urls.map(url => `${process.env.APP_HOST}:${process.env.APP_PORT}/public/images/${url}`),
+      get: (imageNames: string[]) => imageNames.map(imageName => getModelImageUrl(imageName)),
     },
     ref: String,
   },

@@ -28,7 +28,7 @@ export class ChatController {
   public async getUser(@CurrentUser() user: IUser, @Param('id') id: string, @QueryParams() query: Pagination) {
     const session = await this.chatSessionRepo.getSessionBetweenTwoUsers(user.id, id)
     if (!session) {
-      return { session: null, user: await UserModel.findById(id) }
+      return { session: null, data: {docs: [], total: 0}, user: await UserModel.findById(id) }
     }
     const messagesWithCount = await this.chatSessionRepo.getSessionMessagesPaginated(session.id, query.skip, query.take)
     return { session, data: messagesWithCount, user: await UserModel.findById(id) }

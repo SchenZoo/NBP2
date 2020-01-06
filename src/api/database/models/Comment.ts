@@ -4,6 +4,7 @@ import { ModelName } from '../../../constants/ModelName'
 import { IPost } from './Post'
 import { IEvent } from './Event'
 import mongoosePaginate = require('mongoose-paginate')
+import { getModelImageUrl } from '../../../constants/ModelImagePath'
 
 export interface IComment extends Document {
   text: string
@@ -29,7 +30,7 @@ export const commentSchema = new Schema(
     },
     imageURL: {
       type: String,
-      get: url => (url ? `${process.env.APP_HOST}:${process.env.APP_PORT}/public/${url}` : null),
+      get: imageName => getModelImageUrl(imageName),
     },
   },
   { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } },
