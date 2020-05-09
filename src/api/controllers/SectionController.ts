@@ -9,7 +9,7 @@ import { FileService } from '../services/FileService'
 import { ModelImagePath, getAbsoluteServerPath, DEFAULT_IMAGE_PATH } from '../../constants/ModelImagePath'
 import { ObjectFromParamNotFound } from '../errors/ObjectFromParamNotFound'
 
-@JsonController('/section')
+@JsonController('/sections')
 export class SectionController {
   constructor(private fileService: FileService) {}
   @Get()

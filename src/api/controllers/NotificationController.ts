@@ -8,7 +8,7 @@ import { policyCheck } from '../middlewares/AuthorizationMiddlewares'
 import { BASE_POLICY_NAMES } from '../policy/BasePolicy'
 import { INotificationRequest } from '../app_models/requests/INotificationRequest'
 
-@JsonController('/notification')
+@JsonController('/notifications')
 @UseBefore(passportJwtMiddleware)
 export class NotificationController {
   @Get()
@@ -20,7 +20,7 @@ export class NotificationController {
     return notifications
   }
 
-  @Put('/:id')
+  @Put('/:id/opeted-at')
   @UseBefore(policyCheck(BASE_POLICY_NAMES.UPDATE, NotificationPolicy))
   public async openNotification(@Req() request: INotificationRequest) {
     request.notification.openedAt = new Date()

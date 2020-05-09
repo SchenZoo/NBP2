@@ -10,6 +10,6 @@ export enum ModelImagePath {
 
 export const DEFAULT_IMAGE_PATH = 'public/images/'
 
-export const getModelImageUrl = imageName => `${API_PATH}/${DEFAULT_IMAGE_PATH}${imageName}`
+export const getModelImageUrl = imageName => imageName ? `${API_PATH}/${DEFAULT_IMAGE_PATH}${imageName}` : null
 
 export const getAbsoluteServerPath = imageName => path.resolve(DEFAULT_IMAGE_PATH + imageName)

@@ -12,7 +12,7 @@ import { Pagination } from '../misc/QueryPagination'
 @UseBefore(passportJwtMiddleware)
 export class ChatController {
   constructor(private chatModelService: MessageService, private chatSessionRepo: ChatSessionRepository) {}
-  @Post('/message/:id')
+  @Post('/sessions/users/:id/messages')
   public async sendMessage(
     @CurrentUser() user: IUser,
     @Param('id') id: string,
@@ -20,11 +20,11 @@ export class ChatController {
   ) {
     return this.chatModelService.addMessage(user, id, body)
   }
-  @Get('/session')
+  @Get('/sessions')
   public async getSessions(@CurrentUser() user: IUser, @QueryParams() query: Pagination) {
     return ChatSessionModel.paginate({ participants: user.id }, { sort: { createdAt: -1 }, limit: query.take, offset: query.skip, populate: 'participants' })
   }
-  @Get('/user/:id')
+  @Get('/sessions/users/:id')
   public async getUser(@CurrentUser() user: IUser, @Param('id') id: string, @QueryParams() query: Pagination) {
     const session = await this.chatSessionRepo.getSessionBetweenTwoUsers(user.id, id)
     if (!session) {
@@ -33,7 +33,7 @@ export class ChatController {
     const messagesWithCount = await this.chatSessionRepo.getSessionMessagesPaginated(session.id, query.skip, query.take)
     return { session, data: messagesWithCount, user: await UserModel.findById(id) }
   }
-  @Get('/session/:id')
+  @Get('/sessions/:id')
   public async getSessionById(@Param('id') id: string, @QueryParams() query: Pagination) {
     const session = await ChatSessionModel.findById(id)
     if (!session) {

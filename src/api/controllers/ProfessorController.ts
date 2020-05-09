@@ -11,7 +11,7 @@ import { ModelImagePath, getAbsoluteServerPath } from '../../constants/ModelImag
 import { ObjectFromParamNotFound } from '../errors/ObjectFromParamNotFound'
 import { DefaultImage } from '../../constants/DefaultImages'
 
-@JsonController('/professor')
+@JsonController('/professors')
 @UseBefore(checkRole([RoleNames.ADMIN]))
 @UseBefore(passportJwtMiddleware)
 export class ProfessorController {

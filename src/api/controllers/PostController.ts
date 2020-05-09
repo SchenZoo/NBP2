@@ -8,11 +8,7 @@ import {
   Put,
   Param,
   Delete,
-  BodyParam,
   CurrentUser,
-  Params,
-  Req,
-  Controller,
   HttpError,
 } from 'routing-controllers'
 import { passportJwtMiddleware } from '../middlewares/PassportJwtMiddleware'
@@ -24,7 +20,7 @@ import { BASE_POLICY_NAMES } from '../policy/BasePolicy'
 import { PostPolicy } from '../policy/PostPolicy'
 import { EventModel } from '../database/models/Event'
 import { IUser } from '../database/models/User'
-import { CommentModel, IComment } from '../database/models/Comment'
+import { CommentModel } from '../database/models/Comment'
 import { ModelName } from '../../constants/ModelName'
 import { CommentValidator } from '../validators/CommentValidator'
 import { ModelImagePath } from '../../constants/ModelImagePath'
@@ -32,18 +28,13 @@ import { FileService } from '../services/FileService'
 import { plainToClass } from 'class-transformer'
 import { PostValidator } from '../validators/PostValidator'
 
-@JsonController('/post')
+@JsonController('/sections')
 export class PostController {
   constructor(private fileService: FileService) {}
-  @Get()
-  @Get('/:sectionId')
-  public async get(@QueryParams() query: Pagination, @Param('sectionId') sectionId?: number) {
+  @Get('/:sectionId/posts')
+  public async get(@QueryParams() query: Pagination, @Param('sectionId') sectionId: string) {
     query = plainToClass(Pagination, query)
-    let findOptions = {}
-    if (sectionId) {
-      findOptions = { section: sectionId }
-    }
-    const data = await PostModel.paginate(findOptions, {
+    const data = await PostModel.paginate({ section: sectionId }, {
       sort: { createdAt: -1 },
       limit: query.take,
       offset: query.skip,
@@ -60,7 +51,7 @@ export class PostController {
     return data
   }
 
-  @Post('/:id')
+  @Post('/:id/posts')
   @UseBefore(checkRole([RoleNames.PROFESSOR, RoleNames.ADMIN]))
   @UseBefore(passportJwtMiddleware)
   public async create(@Body() body: PostValidator, @Param('id') id: string, @CurrentUser() user: IUser) {
@@ -77,7 +68,7 @@ export class PostController {
     }
   }
 
-  @Put('/:id')
+  @Put('/posts/:id')
   @UseBefore(policyCheck(BASE_POLICY_NAMES.UPDATE, PostPolicy))
   @UseBefore(checkRole([RoleNames.PROFESSOR, RoleNames.ADMIN]))
   @UseBefore(passportJwtMiddleware)
@@ -93,7 +84,7 @@ export class PostController {
     }
   }
 
-  @Delete('/:id')
+  @Delete('/posts/:id')
   @UseBefore(policyCheck(BASE_POLICY_NAMES.UPDATE, PostPolicy))
   @UseBefore(checkRole([RoleNames.PROFESSOR, RoleNames.ADMIN]))
   @UseBefore(passportJwtMiddleware)
@@ -101,16 +92,7 @@ export class PostController {
     return PostModel.findByIdAndDelete(id)
   }
 
-  @Post('/:id/comment')
-  @UseBefore(passportJwtMiddleware)
-  public async addComment(@CurrentUser() user: IUser, @Body() comment: CommentValidator, @Param('id') id: string) {
-    if (comment.imageBase64) {
-      comment.imageURL = await this.fileService.addBase64Image(comment.imageBase64, ModelImagePath.USER_PROFILE)
-    }
-    return new CommentModel({ text: comment.text, user, modelName: ModelName.POST, commented: id, imageURL: comment.imageURL } as IComment).save()
-  }
-
-  @Get('/:id/comment')
+  @Get('/posts/:id/comments')
   @UseBefore(passportJwtMiddleware)
   public async getComments(@Param('id') id: string, @QueryParams() query: Pagination) {
     const comments = await CommentModel.paginate(
@@ -119,5 +101,14 @@ export class PostController {
     )
     comments.docs.reverse()
     return comments
+  }
+
+  @Post('/posts/:id/comments')
+  @UseBefore(passportJwtMiddleware)
+  public async addComment(@CurrentUser() user: IUser, @Body() comment: CommentValidator, @Param('id') id: string) {
+    if (comment.imageBase64) {
+      comment.imageURL = await this.fileService.addBase64Image(comment.imageBase64, ModelImagePath.USER_PROFILE)
+    }
+    return new CommentModel({ text: comment.text, user, onModel: ModelName.POST, commented: id, imageURL: comment.imageURL }).save()
   }
 }

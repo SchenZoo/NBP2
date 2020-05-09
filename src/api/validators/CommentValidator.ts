@@ -10,7 +10,7 @@ export class CommentValidator {
   @ValidateIf((object, value) => {
     return object.text
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsBase64()
   imageBase64: string
 
