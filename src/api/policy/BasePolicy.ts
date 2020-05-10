@@ -6,7 +6,7 @@ export abstract class BasePolicy {
   protected user: IUser
   public constructor(request: Request) {
     this.request = request
-    this.user = request.user
+    this.user = (request.user as IUser)
   }
 
   public abstract async default(): Promise<boolean | undefined>

@@ -4,7 +4,7 @@
   "description": "Lab vezba NBP MongoDB",
   "main": "build/server.ts",
   "scripts": {
-    "build": "tsc  -experimentalDecorators",
+    "build": "npx tsc  -experimentalDecorators",
     "start": "yarn build && forever start -e logs/error.log -o logs/output.log -a -n --killSignal=SIGTERM build/server.js",
     "restart": "forever restart  -e logs/error.log -o logs/output.log -a --killSignal=SIGTERM build/server.js",
     "stop": "forever --killSignal=SIGKILL stop build/server.js",
