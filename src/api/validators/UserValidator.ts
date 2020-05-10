@@ -1,5 +1,5 @@
 import { IUser } from '../database/models/User'
-import { IsString, IsNotEmpty, IsOptional, IsEmail, IsArray, IsBase64 } from 'class-validator'
+import { IsString, IsNotEmpty, IsOptional, IsEmail } from 'class-validator'
 import { Type } from 'class-transformer'
 
 export class UserValidator {
