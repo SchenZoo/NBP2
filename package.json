@@ -18,7 +18,6 @@
   "author": "Stankovic Aleksandar",
   "license": "ISC",
   "dependencies": {
-    "@types/helmet": "0.0.43",
     "bcrypt": "^3.0.6",
     "cors": "^2.8.5",
     "cron": "^1.7.1",
@@ -26,7 +25,6 @@
     "event-dispatch": "^0.4.1",
     "express": "^4.17.1",
     "faker": "^4.1.0",
-    "firebase-admin": "^8.0.0",
     "helmet": "^3.18.0",
     "md5": "^2.2.1",
     "mime": "^2.4.3",
@@ -42,6 +40,7 @@
     "stoppable": "^1.1.0"
   },
   "devDependencies": {
+    "@types/helmet": "0.0.43",
     "@types/bcrypt": "^3.0.0",
     "@types/cors": "^2.8.5",
     "@types/cron": "^1.7.1",
