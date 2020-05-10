@@ -9,6 +9,7 @@ import { JwtStrategy } from './auth/JwtStrategy'
 import { JsonInterceptor } from './api/interceptors/JsonInterceptor'
 import './api/database/MongoConnection'
 import './api/database/models/index'
+import Controllers from './api/controllers'
 
 RoutingUseContainer(Container)
 export const app: express.Application = express()
@@ -29,7 +30,7 @@ app.set('env', appEnv)
 
 useExpressServer(app, {
   routePrefix: '/api',
-  controllers: [`${__dirname}/api/controllers/**/*.ts`],
+  controllers: Object.values(Controllers),
   middlewares: [GlobalErrorHandler],
   validation: true,
   defaults: { nullResultCode: 404, undefinedResultCode: 404 },
