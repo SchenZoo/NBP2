@@ -12,7 +12,7 @@ import { FriendRequestModel } from "../database/models/FriendRequest";
 import { FriendshipModel } from "../database/models/Friendship";
 import { UserValidator } from "../validators/UserValidator";
 
-@JsonController("/user")
+@JsonController("/users")
 export class UserController {
   @Get("/:id")
   public async get(@Param("id") id: string, @CurrentUser() user: IUser) {
