@@ -1,18 +1,19 @@
-import {  IsString, ValidateIf, IsNotEmpty } from 'class-validator'
+import { IsString, ValidateIf, IsNotEmpty } from "class-validator";
 
 export class CommentValidator {
   @ValidateIf((object, value) => {
-    return !object.imageBase64
+    return !object.imageBase64;
   })
   @IsNotEmpty()
   @IsString()
-  text: string
+  text: string;
   @ValidateIf((object, value) => {
-    return !object.text
+
+    return !object.text;
   })
   @IsNotEmpty()
   @IsString()
-  imageBase64: string
+  imageBase64: string;
 
-  imageURL: string
+  imageURL: string;
 }
