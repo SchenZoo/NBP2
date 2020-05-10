@@ -10,10 +10,10 @@ export class PostObjectValidator {
   @IsString()
   text: string
   @IsOptional()
-  @IsDate()
-  startAt: Date
+  @IsString()
+  startsAt: Date
   @IsOptional()
-  @IsDate()
+  @IsString()
   endsAt: Date
 
   section: string
