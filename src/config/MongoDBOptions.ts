@@ -12,4 +12,5 @@ export const MONGO_CONNECTION_OPTIONS = {
   pass: process.env.MONGO_PASSWORD,
   authSource: process.env.MONGO_SOURCE,
   useFindAndModify: false,
+  useUnifiedTopology: true
 } as ConnectionOptions
