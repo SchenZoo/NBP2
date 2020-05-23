@@ -31,6 +31,13 @@ export class SectionController {
     return SectionModel.find().sort({ createdAt: -1 });
   }
 
+  @Get("/:id")
+  public async getOne(
+    @Param("id") id: string
+  ) {
+    return SectionModel.findById(id);
+  }
+
   @Post()
   @UseBefore(passportJwtMiddleware, checkRole([RoleNames.ADMIN]))
   public async create(
