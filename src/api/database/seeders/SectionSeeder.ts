@@ -1,22 +1,17 @@
-import { ISeeder } from './Seeder'
+import '../MongoConnection'
 import { SectionModel } from '../models/Section'
 import { UserModel } from '../models/User'
 import faker = require('faker')
 
-export class SectionSeeder implements ISeeder {
-  public log: boolean
-  constructor(log: boolean = false) {
-    this.log = log
-  }
-  public async seed(count: number) {
-    const admin = await UserModel.findOne({ username: 'Admin' })
+(async ()=>{
+  const admin = await UserModel.findOne({ username: 'Admin' })
     if (!admin) {
       console.error('ADMIN ISNT FOUND!')
-      return false
+      process.exit(1)
     }
     const promises: Array<Promise<any>> = []
     try {
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < 5; i++) {
         const section = new SectionModel({
           user: admin.id,
           name: faker.name.title(),
@@ -24,22 +19,12 @@ export class SectionSeeder implements ISeeder {
           onServer: false,
         })
         promises.push(section.save())
-        if (this.log) {
           console.log('Created - name:' + section.name)
-        }
       }
     } catch (err) {
-      if (this.log) {
         console.error(err)
-      }
+        process.exit(1)
     }
     await Promise.all(promises)
-    return true
-  }
-}
-
-setTimeout(() => {
-  new SectionSeeder(true).seed(20).then(res => {
     process.exit(0)
-  })
-}, 2000)
+})()
