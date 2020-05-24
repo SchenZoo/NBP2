@@ -11,7 +11,7 @@ export const removeMongoCacheByModel = (Model: mongoose.Model<any>) => async (
 ) => {
   const key = Model.modelName;
   try {
-    client.del(key)
+    client.del(key);
   } catch (error) {
     console.error(`Error clearing cache: ${key}`, error);
   }

@@ -2,10 +2,7 @@ import { removeMongoCacheByModel } from './../middlewares/cache/ModelCacheClearM
 import { IUserPolictyRequest } from "./../policy/UserPolicy";
 import { BASE_POLICY_NAMES } from "./../policy/BasePolicy";
 import { policyCheck } from "./../middlewares/AuthorizationMiddlewares";
-import { IMongooseQuery } from "./../app_models/mongoose/IMongooseQuery";
 import { CACHE_KEYS } from "./../../constants/CacheKeys";
-import { removeMongoCacheRequestId } from "./../middlewares/cache/RequestIdCacheClearMiddleware";
-import { RoleNames } from "./../../constants/RoleNames";
 import {
   getAbsoluteServerPath,
   ModelImagePath,
@@ -35,7 +32,7 @@ export class UserController {
   @Get("/:id")
   public async get(@Param("id") id: string, @CurrentUser() user: IUser) {
     const [gettingUser, friendRequest, friendship] = await Promise.all([
-      (UserModel.findById(id) as IMongooseQuery<IUser>).cache({ cacheKey: CACHE_KEYS.ITEM_USER(id) }),
+      UserModel.findById(id).cache({ cacheKey: CACHE_KEYS.ITEM_USER(id) }),
       FriendRequestModel.findOne().or([
         { sender: id, receiver: user.id },
         { sender: user.id, receiver: id },

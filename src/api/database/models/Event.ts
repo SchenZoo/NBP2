@@ -1,16 +1,16 @@
-import { IUser } from './User'
-import mongoose, { Document, Schema } from 'mongoose'
-import { ModelName } from '../../../constants/ModelName'
-import { locationSchema, ILocation } from './Location'
-import { PostModel, POST_DISCRIMINATOR_KEY, PostTypes } from './Post'
+import { IUser } from './User';
+import mongoose, { Document, Schema } from 'mongoose';
+import { ModelName } from '../../../constants/ModelName';
+import { locationSchema, ILocation } from './Location';
+import { PostModel, POST_DISCRIMINATOR_KEY, PostTypes } from './Post';
 
 export interface IEvent extends Document {
-  title: string
-  text: string
-  user: IUser | string
-  location?: ILocation
-  startsAt?: Date
-  endsAt?: Date
+  title: string;
+  text: string;
+  user: IUser | string;
+  location?: ILocation;
+  startsAt?: Date;
+  endsAt?: Date;
 }
 
 const eventSchema = new Schema(
@@ -20,6 +20,6 @@ const eventSchema = new Schema(
     location: locationSchema,
   },
   { discriminatorKey: POST_DISCRIMINATOR_KEY },
-)
+);
 
-export const EventModel = PostModel.discriminator<IEvent>(PostTypes.EVENT, eventSchema)
+export const EventModel = PostModel.discriminator<IEvent>(PostTypes.EVENT, eventSchema);

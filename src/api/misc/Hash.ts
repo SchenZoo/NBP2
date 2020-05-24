@@ -1,5 +1,5 @@
-import { hashSync } from 'bcrypt'
+import { hashSync } from 'bcrypt';
 
 export const hashPassowrd = (password: string) => {
-  return hashSync(password, 8)
-}
+  return hashSync(password, 8);
+};

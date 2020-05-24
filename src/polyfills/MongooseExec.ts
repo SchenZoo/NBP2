@@ -7,7 +7,16 @@ const client = new Redis(REDIS_CACHE_CONFIG as Redis.RedisOptions);
 const { exec } = mongoose.Query.prototype;
 (mongoose as any).Query.prototype.exec = async function () {
   if (!this.useCache || !this.cacheKey) {
-    return exec.apply(this, arguments);
+    let normalResult = await exec.apply(this, arguments);
+    if (this.allowPagination) {
+      normalResult = {
+        docs: normalResult,
+        limit: this.paginationLimit,
+        offset: this.paginationSkip,
+        total: await this.model.countDocuments(this.getQuery()),
+      };
+    }
+    return normalResult;
   }
 
   const { lean, ...restMongooseOptions } = this._mongooseOptions;

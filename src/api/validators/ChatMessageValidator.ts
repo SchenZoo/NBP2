@@ -1,35 +1,35 @@
-import { IsOptional, IsArray, IsString, IsEnum, IsInt, ValidateIf, IsNotEmpty } from 'class-validator'
-import { Type } from 'class-transformer'
-import { MessageDataModels } from '../database/models/Message'
+import { IsOptional, IsArray, IsString, IsEnum, IsInt, ValidateIf, IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+import { MessageDataModels } from '../database/models/Message';
 
 export class ChatMessageValidator {
   @IsOptional()
   @Type(() => String)
   @IsArray()
-  filesBase64: string[]
+  filesBase64: string[];
 
   @IsOptional()
   @IsString()
-  text: string
+  text: string;
 
   @ValidateIf((object, value) => {
-    return object.data
+    return object.data;
   })
   @IsNotEmpty()
   @IsEnum(MessageDataModels)
-  public onModel: string
+  public onModel: string;
   @ValidateIf((object, value) => {
-    return object.onModel
+    return object.onModel;
   })
   @IsNotEmpty()
   @IsString()
-  public data: string
+  public data: string;
 
   @IsOptional()
   @IsString()
-  ref: string
+  ref: string;
 
-  files: string[]
-  sender: number
-  session: number
+  files: string[];
+  sender: number;
+  session: number;
 }

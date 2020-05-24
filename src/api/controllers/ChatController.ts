@@ -1,5 +1,4 @@
 import { CACHE_KEYS } from "./../../constants/CacheKeys";
-import { IMongooseQuery } from "./../app_models/mongoose/IMongooseQuery";
 import {
   JsonController,
   UseBefore,
@@ -12,8 +11,7 @@ import {
 } from "routing-controllers";
 import { passportJwtMiddleware } from "../middlewares/PassportJwtMiddleware";
 import { IUser, UserModel } from "../database/models/User";
-import { ChatSessionModel, IChatSession } from "../database/models/ChatSession";
-import { ObjectFromParamNotFound } from "../errors/ObjectFromParamNotFound";
+import { ChatSessionModel } from "../database/models/ChatSession";
 import { ChatSessionRepository } from "../repositories/ChatSessionRepository";
 import { MessageService } from "../services/model_services/MessageService";
 import { ChatMessageValidator } from "../validators/ChatMessageValidator";
@@ -42,9 +40,7 @@ export class ChatController {
     @CurrentUser() user: IUser,
     @QueryParams() query: Pagination
   ) {
-    return (ChatSessionModel.find({ participants: user.id }) as IMongooseQuery<
-      IChatSession[]
-    >)
+    return ChatSessionModel.find({ participants: user.id })
       .paginate(query.skip, query.take)
       .populate("participants")
       .sort({ createdAt: -1 });
@@ -60,9 +56,9 @@ export class ChatController {
       user.id,
       id
     );
-    const chatUser = await (UserModel.findById(id) as IMongooseQuery<
-      IUser
-    >).cache({ cacheKey: CACHE_KEYS.ITEM_USER(id) });
+    const chatUser = await UserModel.findById(id).cache({
+      cacheKey: CACHE_KEYS.ITEM_USER(id),
+    });
     if (!session) {
       return { session: null, data: { docs: [], total: 0 }, user: chatUser };
     }
@@ -79,9 +75,7 @@ export class ChatController {
     @Param("id") id: string,
     @QueryParams() query: Pagination
   ) {
-    const session = await (ChatSessionModel.findById(id) as IMongooseQuery<
-      IChatSession
-    >);
+    const session = await ChatSessionModel.findById(id);
     if (!session) {
       return { session: null };
     }

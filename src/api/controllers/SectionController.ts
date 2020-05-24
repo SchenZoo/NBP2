@@ -1,6 +1,5 @@
 import { CACHE_KEYS } from "./../../constants/CacheKeys";
 import { SectionModel, ISection } from "./../database/models/Section";
-import { IMongooseQuery } from "./../app_models/mongoose/IMongooseQuery";
 import {
   JsonController,
   UseBefore,
@@ -29,14 +28,14 @@ export class SectionController {
   constructor(private fileService: FileService) {}
   @Get()
   public async get() {
-    return (SectionModel.find().sort({
+    return SectionModel.find().sort({
       createdAt: -1,
-    }) as IMongooseQuery<ISection[]>).cache();
+    }).cache();
   }
 
   @Get("/:id")
   public async getOne(@Param("id") id: string) {
-    return (SectionModel.findById(id) as IMongooseQuery<ISection>).cache({
+    return SectionModel.findById(id).cache({
       cacheKey: CACHE_KEYS.ITEM_SECTION(id),
     });
   }
@@ -67,9 +66,7 @@ export class SectionController {
     @Param("id") id: string
   ) {
     if (section.imageBase64) {
-      const oldSection = await (SectionModel.findById(id) as IMongooseQuery<
-        ISection
-      >).cache({
+      const oldSection = await SectionModel.findById(id).cache({
         cacheKey: CACHE_KEYS.ITEM_SECTION(id),
       });
       if (!oldSection) {
@@ -90,9 +87,7 @@ export class SectionController {
   @UseBefore(checkRole([RoleNames.ADMIN]))
   @UseBefore(passportJwtMiddleware)
   public async delete(@Param("id") id: string) {
-    const section = await (SectionModel.findById(id) as IMongooseQuery<
-      ISection
-    >).cache({
+    const section = await SectionModel.findById(id).cache({
       cacheKey: CACHE_KEYS.ITEM_SECTION(id),
     });
     if (!section) {

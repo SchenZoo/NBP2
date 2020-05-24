@@ -1,11 +1,10 @@
-import mongoose, { Document, Schema, model } from 'mongoose'
-import { ModelName } from '../../../constants/ModelName'
-import { IUser } from './User'
-import mongoosePaginate = require('mongoose-paginate')
+import mongoose, { Document, Schema, model } from 'mongoose';
+import { ModelName } from '../../../constants/ModelName';
+import { IUser } from './User';
 
 export interface IFriendRequest extends Document {
-  sender: IUser | string
-  receiver: IUser | string
+  sender: IUser | string;
+  receiver: IUser | string;
 }
 
 const friendRequestSchema = new Schema(
@@ -14,7 +13,6 @@ const friendRequestSchema = new Schema(
     receiver: { ref: ModelName.USER, type: Schema.Types.ObjectId },
   },
   { timestamps: true },
-)
-friendRequestSchema.plugin(mongoosePaginate)
+);
 
-export const FriendRequestModel = model<IFriendRequest>(ModelName.FRIEND_REQUEST, friendRequestSchema)
+export const FriendRequestModel = model<IFriendRequest>(ModelName.FRIEND_REQUEST, friendRequestSchema);

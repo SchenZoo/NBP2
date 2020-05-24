@@ -1,1 +1,1 @@
-export const getUserRoom = receiverId => 'user-' + receiverId
+export const getUserRoom = receiverId => 'user-' + receiverId;

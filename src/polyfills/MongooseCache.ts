@@ -10,11 +10,10 @@ import mongoose from "mongoose";
   }
   if (typeof options === "object") {
     const { cacheKey } = options;
-    if (cacheKey === null || cacheKey === undefined) {
-      this.cacheKey = this.model.modelName;
-    } else {
-      this.cacheKey = cacheKey;
-    }
+    this.cacheKey =
+      cacheKey === null || cacheKey === undefined
+        ? this.model.modelName
+        : cacheKey;
     this.useCache = true;
   }
   return this;

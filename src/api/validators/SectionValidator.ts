@@ -1,15 +1,15 @@
-import { IsString, IsNotEmpty } from 'class-validator'
-import { IUser } from '../database/models/User'
+import { IsString, IsNotEmpty } from 'class-validator';
+import { IUser } from '../database/models/User';
 
 export class SectionValidation {
   @IsNotEmpty()
   @IsString()
-  name: string
+  name: string;
   @IsString()
   @IsNotEmpty()
-  imageBase64: string
+  imageBase64: string;
 
-  imageURL: string
+  imageURL: string;
 
-  user: IUser
+  user: IUser;
 }

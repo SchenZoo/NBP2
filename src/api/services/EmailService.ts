@@ -1,5 +1,4 @@
 import { CACHE_KEYS } from './../../constants/CacheKeys';
-import { IMongooseQuery } from "./../app_models/mongoose/IMongooseQuery";
 import { Service } from "typedi";
 import {
   SMTPOptions,
@@ -20,9 +19,7 @@ export class EmailService {
   }
 
   async sendEmail(receiverId: string, subject: string, text: string) {
-    const receiver = await (UserModel.findById(receiverId) as IMongooseQuery<
-      IUser
-    >).cache({ cacheKey: CACHE_KEYS.ITEM_USER(receiverId) });
+    const receiver = await UserModel.findById(receiverId).cache({ cacheKey: CACHE_KEYS.ITEM_USER(receiverId) });
     if (!receiver || !receiver.email) {
       return false;
     }

@@ -1,5 +1,4 @@
 import { CACHE_KEYS } from './../../constants/CacheKeys';
-import { IMongooseQuery } from "./../app_models/mongoose/IMongooseQuery";
 import {
   JsonController,
   UseBefore,
@@ -33,10 +32,10 @@ export class ProfessorController {
   constructor(private fileService: FileService) {}
   @Get()
   public async get(@QueryParams() query: PaginationSearch) {
-    return (UserModel.find({
+    return UserModel.find({
       username: { $regex: `${query.name ? query.name : ""}` },
       roles: RoleNames.PROFESSOR,
-    }) as IMongooseQuery<IUser[]>)
+    })
       .sort({ createdAt: -1 })
       .paginate(query.skip, query.take)
       .cache();
@@ -55,7 +54,7 @@ export class ProfessorController {
       );
     }
 
-    return await new UserModel(professor).save();
+    return new UserModel(professor).save();
   }
 
   @Put("/:id")
@@ -87,9 +86,7 @@ export class ProfessorController {
 
   @Delete("/:id")
   public async delete(@Param("id") id: string) {
-    const professor = await (UserModel.findById(id) as IMongooseQuery<
-      IUser
-    >).cache({ cacheKey: CACHE_KEYS.ITEM_USER(id) });
+    const professor = await UserModel.findById(id).cache({ cacheKey: CACHE_KEYS.ITEM_USER(id) });
     if (!professor || professor.hasRoles([RoleNames.ADMIN])) {
       throw new ObjectFromParamNotFound("User", id);
     }

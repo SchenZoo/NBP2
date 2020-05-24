@@ -1,14 +1,14 @@
-import { IReportTicket } from '../database/models/ReportTicket'
-import { IsString, IsNotEmpty, IsOptional, IsEmail, IsArray } from 'class-validator'
+import { IReportTicket } from '../database/models/ReportTicket';
+import { IsString, IsNotEmpty, IsOptional, IsEmail, IsArray } from 'class-validator';
 
 export class ReportValidator {
   @IsString()
   @IsNotEmpty()
-  text: string
+  text: string;
   @IsNotEmpty()
   @IsEmail()
-  contactEmail: string
+  contactEmail: string;
   @IsNotEmpty()
   @IsString()
-  contactName: string
+  contactName: string;
 }

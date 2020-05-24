@@ -40,7 +40,7 @@ export function initializeCacheClear(
     clearListCache();
   });
 
-  schema.pre("save", function () {
+  schema.pre("save", () => {
     clearListCache();
   });
 }

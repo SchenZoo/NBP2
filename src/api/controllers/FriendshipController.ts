@@ -1,11 +1,11 @@
-import { JsonController, UseBefore, Get, QueryParams, CurrentUser, Post, Param, Delete } from 'routing-controllers'
-import { passportJwtMiddleware } from '../middlewares/PassportJwtMiddleware'
-import { Pagination } from '../misc/QueryPagination'
-import { IUser } from '../database/models/User'
-import { FriendshipModel } from '../database/models/Friendship'
-import { FriendRequestModel } from '../database/models/FriendRequest'
-import { ConflictError } from '../errors/ConflictError'
-import { NotificationRepository } from '../repositories/NotificationRepository'
+import { JsonController, UseBefore, Get, QueryParams, CurrentUser, Post, Param, Delete } from 'routing-controllers';
+import { passportJwtMiddleware } from '../middlewares/PassportJwtMiddleware';
+import { Pagination } from '../misc/QueryPagination';
+import { IUser } from '../database/models/User';
+import { FriendshipModel } from '../database/models/Friendship';
+import { FriendRequestModel } from '../database/models/FriendRequest';
+import { ConflictError } from '../errors/ConflictError';
+import { NotificationRepository } from '../repositories/NotificationRepository';
 
 @JsonController('/friends')
 @UseBefore(passportJwtMiddleware)
@@ -21,12 +21,12 @@ export class FriendshipController {
         offset: query.skip,
         populate: ['mario', 'luigi'],
       },
-    )
-    return { ...friendships, docs: friendships.docs.map(friendship => ((friendship.luigi as IUser).id === user.id ? friendship.mario : friendship.luigi)) }
+    );
+    return { ...friendships, docs: friendships.docs.map(friendship => ((friendship.luigi as IUser).id === user.id ? friendship.mario : friendship.luigi)) };
   }
 
   @Delete('/:id')
   public async delete(@Param('id') id: string) {
-    return FriendshipModel.findByIdAndDelete(id)
+    return FriendshipModel.findByIdAndDelete(id);
   }
 }

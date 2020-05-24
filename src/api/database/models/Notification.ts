@@ -1,14 +1,13 @@
-import { Document, Schema, model } from 'mongoose'
-import { ModelName } from '../../../constants/ModelName'
-import { IUser } from './User'
-import mongoosePaginate = require('mongoose-paginate')
+import { Document, Schema, model } from 'mongoose';
+import { ModelName } from '../../../constants/ModelName';
+import { IUser } from './User';
 
 export interface INotification extends Document {
-  text: string
-  relativeLink: string
-  emitter: IUser | string
-  receiver: IUser | string
-  openedAt: Date
+  text: string;
+  relativeLink: string;
+  emitter: IUser | string;
+  receiver: IUser | string;
+  openedAt: Date;
 }
 
 const notificationSchema = new Schema(
@@ -22,8 +21,8 @@ const notificationSchema = new Schema(
     },
     emitterOnModel: {
       type: String,
-      required: function() {
-        return (this as any).emitter
+      required() {
+        return (this as any).emitter;
       },
     },
     receiver: {
@@ -33,7 +32,6 @@ const notificationSchema = new Schema(
     openedAt: { type: Date, required: false },
   },
   { timestamps: true },
-)
-notificationSchema.plugin(mongoosePaginate)
+);
 
-export const NotificationModel = model<INotification>(ModelName.NOTIFICATION, notificationSchema)
+export const NotificationModel = model<INotification>(ModelName.NOTIFICATION, notificationSchema);

@@ -39,22 +39,22 @@ export class PostController {
     @QueryParams() query: Pagination,
     @Param("sectionId") sectionId: string
   ) {
-    query = plainToClass(Pagination, query)
-    const data = await PostModel.paginate({ section: sectionId }, {
-      sort: { createdAt: -1 },
-      limit: query.take,
-      offset: query.skip,
-      populate: [{
-        path: 'comments',
-        populate: 'user',
-      },'user'],
-    })
-    data.docs.forEach(post => {
+    query = plainToClass(Pagination, query);
+    const data = await PostModel.find({ section: sectionId })
+      .sort({ createdAt: -1 })
+      .paginate(query.skip, query.take)
+      .populate({
+        path: "comments",
+        populate: "user",
+      })
+      .populate("user");
+
+    data.docs.forEach((post) => {
       if (post.comments) {
-        post.comments.reverse()
+        post.comments.reverse();
       }
-    })
-    return data
+    });
+    return data;
   }
 
   @Post("/:id/posts")
@@ -70,11 +70,11 @@ export class PostController {
     post.section = id;
     switch (body.type) {
       case PostTypes.EVENT:
-        return await new EventModel(post).save();
+        return new EventModel(post).save();
       case PostTypes.TEXT_POST:
-        return await new TextPostModel(post).save();
+        return new TextPostModel(post).save();
       default:
-        return await new PostModel(post).save();
+        return new PostModel(post).save();
     }
   }
 
@@ -108,16 +108,15 @@ export class PostController {
     @Param("id") id: string,
     @QueryParams() query: Pagination
   ) {
-    const comments = await CommentModel.paginate(
-      { commented: id, onModel: ModelName.POST },
-      {
-        limit: query.take,
-        offset: query.skip,
-        populate: "user",
-        sort: { createdAt: -1 },
-      }
-    );
+    const comments = await CommentModel.find({
+      commented: id,
+      onModel: ModelName.POST,
+    })
+      .sort({ createdAt: -1 })
+      .paginate(query.skip, query.take);
+
     comments.docs.reverse();
+
     return comments;
   }
 

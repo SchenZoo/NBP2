@@ -1,9 +1,9 @@
-import { ConnectionOptions } from 'mongoose'
+import { ConnectionOptions } from "mongoose";
 
-const server = process.env.MONGO_HOSTNAME + ':' + process.env.MONGO_PORT
-const database = process.env.MONGO_DB
+const server = process.env.MONGO_HOSTNAME + ":" + process.env.MONGO_PORT;
+const database = process.env.MONGO_DB;
 
-export const MONGO_URL = `mongodb://${server}/${database}`
+export const MONGO_URL = `mongodb://${server}/${database}`;
 export const MONGO_CONNECTION_OPTIONS = {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -12,5 +12,5 @@ export const MONGO_CONNECTION_OPTIONS = {
   pass: process.env.MONGO_PASSWORD,
   authSource: process.env.MONGO_SOURCE,
   useFindAndModify: false,
-  useUnifiedTopology: true
-} as ConnectionOptions
+  useUnifiedTopology: true,
+};

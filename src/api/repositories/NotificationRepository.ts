@@ -1,10 +1,9 @@
-import { Service } from 'typedi'
-import { INotification, NotificationModel } from '../database/models/Notification'
-import { IUser } from '../database/models/User'
-import { getRelativeUserProfileLink } from '../misc/Links'
-import { EventDispatcher } from 'event-dispatch'
-import { INotificationSent } from '../app_models/event_dispatch/INotificationSent'
-import { ModelName } from '../../constants/ModelName'
+import { Service } from "typedi";
+import { NotificationModel } from "../database/models/Notification";
+import { IUser } from "../database/models/User";
+import { getRelativeUserProfileLink } from "../misc/Links";
+import { EventDispatcher } from "event-dispatch";
+import { ModelName } from "../../constants/ModelName";
 
 @Service()
 export class NotificationRepository {
@@ -15,13 +14,13 @@ export class NotificationRepository {
       emitter: emitter.id,
       emitterOnModel: ModelName.USER,
       receiver: receiverId,
-    }).save()
-    const eventDispatcher = new EventDispatcher()
-    eventDispatcher.dispatch('notificationSent', {
+    }).save();
+    const eventDispatcher = new EventDispatcher();
+    eventDispatcher.dispatch("notificationSent", {
       notification,
       userFrom: emitter,
       receiverId,
-    } as INotificationSent)
-    return notification
+    });
+    return notification;
   }
 }

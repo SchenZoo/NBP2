@@ -3,7 +3,6 @@ import { IUser } from "./User";
 import { ModelName } from "../../../constants/ModelName";
 import { IPost } from "./Post";
 import { IEvent } from "./Event";
-import mongoosePaginate = require("mongoose-paginate");
 import { getModelImageUrl } from "../../../constants/ModelImagePath";
 
 export interface IComment extends Document {
@@ -35,7 +34,6 @@ export const commentSchema = new Schema(
   },
   { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } }
 );
-commentSchema.plugin(mongoosePaginate);
 
 export const CommentModel = mongoose.model<IComment>(
   ModelName.COMMENT,

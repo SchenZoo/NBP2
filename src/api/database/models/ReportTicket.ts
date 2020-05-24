@@ -1,11 +1,10 @@
-import mongoose, { Document, Schema, model, modelNames } from 'mongoose'
-import { ModelName } from '../../../constants/ModelName'
-import mongoosePaginate = require('mongoose-paginate')
+import mongoose, { Document, Schema, model, modelNames } from 'mongoose';
+import { ModelName } from '../../../constants/ModelName';
 
 export interface IReportTicket extends Document {
-  text: string
-  contactEmail: string
-  contactName: string
+  text: string;
+  contactEmail: string;
+  contactName: string;
 }
 
 const reportTicketSchema = new Schema(
@@ -15,7 +14,6 @@ const reportTicketSchema = new Schema(
     contactName: { type: String, required: true },
   },
   { timestamps: true },
-)
-reportTicketSchema.plugin(mongoosePaginate)
+);
 
-export const ReportTicketModel = mongoose.model<IReportTicket>(ModelName.REPORT_TICKET, reportTicketSchema)
+export const ReportTicketModel = mongoose.model<IReportTicket>(ModelName.REPORT_TICKET, reportTicketSchema);

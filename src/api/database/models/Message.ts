@@ -1,19 +1,18 @@
-import mongoose, { Document, Schema } from 'mongoose'
-import { ModelName } from '../../../constants/ModelName'
-import { IUser } from './User'
-import { IEvent } from './Event'
-import { IPost } from './Post'
-import { IChatSession } from './ChatSession'
-import mongoosePaginate = require('mongoose-paginate')
-import { getModelImageUrl } from '../../../constants/ModelImagePath'
+import mongoose, { Document, Schema } from 'mongoose';
+import { ModelName } from '../../../constants/ModelName';
+import { IUser } from './User';
+import { IEvent } from './Event';
+import { IPost } from './Post';
+import { IChatSession } from './ChatSession';
+import { getModelImageUrl } from '../../../constants/ModelImagePath';
 
 export interface IMessage extends Document {
-  text?: string
-  sender: IUser | number
-  data?: IEvent | IPost
-  onModel?: string
-  session: string | IChatSession
-  ref?: string
+  text?: string;
+  sender: IUser | number;
+  data?: IEvent | IPost;
+  onModel?: string;
+  session: string | IChatSession;
+  ref?: string;
 }
 
 const messageSchema = new Schema(
@@ -23,7 +22,7 @@ const messageSchema = new Schema(
     onModel: {
       type: String,
       required() {
-        return (this as any).data !== undefined
+        return (this as any).data !== undefined;
       },
     },
     data: {
@@ -39,10 +38,9 @@ const messageSchema = new Schema(
     ref: String,
   },
   { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } },
-)
-messageSchema.plugin(mongoosePaginate)
+);
 
-export const MessageModel = mongoose.model<IMessage>(ModelName.MESSAGE, messageSchema)
+export const MessageModel = mongoose.model<IMessage>(ModelName.MESSAGE, messageSchema);
 
 export enum MessageDataModels {
   Post = 'Post',
