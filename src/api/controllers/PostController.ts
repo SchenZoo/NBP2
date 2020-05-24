@@ -1,3 +1,4 @@
+import { CommentPolicy } from "./../policy/CommentPolicy";
 import {
   JsonController,
   Get,
@@ -10,6 +11,7 @@ import {
   Delete,
   CurrentUser,
   HttpError,
+  Req,
 } from "routing-controllers";
 import { passportJwtMiddleware } from "../middlewares/PassportJwtMiddleware";
 import { Pagination } from "../misc/QueryPagination";
@@ -30,6 +32,7 @@ import { ModelImagePath } from "../../constants/ModelImagePath";
 import { FileService } from "../services/FileService";
 import { plainToClass } from "class-transformer";
 import { PostValidator } from "../validators/PostValidator";
+import { ICommentPolicyRequest } from "../policy/CommentPolicy";
 
 @JsonController("/sections")
 export class PostController {
@@ -140,5 +143,12 @@ export class PostController {
       commented: id,
       imageURL: comment.imageURL,
     }).save();
+  }
+
+  @Delete("/posts/comments/:id")
+  @UseBefore(policyCheck(BASE_POLICY_NAMES.DELETE, CommentPolicy))
+  @UseBefore(passportJwtMiddleware)
+  public async deleteComment(@Req() req: ICommentPolicyRequest) {
+    return req.requestComment.remove();
   }
 }
