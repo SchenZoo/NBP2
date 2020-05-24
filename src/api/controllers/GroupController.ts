@@ -68,17 +68,26 @@ export class GroupController {
     @Body() body: GroupObjectValidator,
     @CurrentUser() user: IUser
   ) {
+    const allParticipants = [
+      { type: GROUP_PARTICIPANT_TYPES.OWNER, participantId: user._id },
+    ];
+    if (body.participantIds) {
+      allParticipants.push(
+        ...body.participantIds.map((id) => ({
+          type: GROUP_PARTICIPANT_TYPES.USER,
+          participantId: id,
+        }))
+      );
+    }
     const chatSession = await new ChatSessionModel({
       name: body.name,
       type: ChatSessionTypes.GROUP,
-      participantIds: [user._id],
+      participantIds: allParticipants.map((par) => par.participantId),
     }).save();
     return new GroupModel({
       ...body,
       userId: user._id,
-      participants: [
-        { type: GROUP_PARTICIPANT_TYPES.OWNER, participantId: user._id },
-      ],
+      participants: allParticipants,
       chatSessionId: chatSession._id,
     }).save();
   }
