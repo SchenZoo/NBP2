@@ -69,6 +69,7 @@ export class GroupController {
     @CurrentUser() user: IUser
   ) {
     const chatSession = await new ChatSessionModel({
+      name: body.name,
       type: ChatSessionTypes.GROUP,
       participantIds: [user._id],
     }).save();

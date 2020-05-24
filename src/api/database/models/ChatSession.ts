@@ -16,6 +16,9 @@ export enum ChatSessionTypes {
 
 const chatSessionSchema = new Schema(
   {
+    name: {
+      type: String,
+    },
     participantIds: [
       {
         type: Schema.Types.ObjectId,
