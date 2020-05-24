@@ -1115,14 +1115,18 @@ declare module "mongoose" {
   }
 
   // Hook functions: https://github.com/vkarpov15/hooks-fixed
-  type HookSyncCallback<T> = (this: T, next: HookNextFunction, docs: any[]) => Promise<any> | void;
+  type HookSyncCallback<T> = (
+    this: T,
+    next: HookNextFunction,
+    docs: any[]
+  ) => Promise<any> | void;
 
   type HookAsyncCallback<T> = (
-      this: T,
-      next: HookNextFunction,
-      done: HookDoneFunction,
-      docs: any[]
-    ) => Promise<any> | void;
+    this: T,
+    next: HookNextFunction,
+    done: HookDoneFunction,
+    docs: any[]
+  ) => Promise<any> | void;
 
   type HookErrorCallback = (error?: Error) => any;
 
@@ -1378,7 +1382,10 @@ declare module "mongoose" {
 
     type ValidateFn<T> = (value: T) => boolean;
 
-    type AsyncValidateFn<T> = (value: T, done: (result: boolean) => void) => void;
+    type AsyncValidateFn<T> = (
+      value: T,
+      done: (result: boolean) => void
+    ) => void;
 
     interface ValidatorProps {
       path: string;
@@ -1872,7 +1879,8 @@ declare module "mongoose" {
     //   commonly used in mongoose and is found in an example in the docs:
     //   http://mongoosejs.com/docs/api.html#aggregate_Aggregate
     // constructor exposes static methods of mongodb.ObjectID and ObjectId(id)
-    type ObjectIdConstructor = typeof mongodb.ObjectID & ((s?: string | number) => mongodb.ObjectID;)
+    type ObjectIdConstructor = typeof mongodb.ObjectID &
+      ((s?: string | number) => mongodb.ObjectID);
 
     // var objectId: mongoose.Types.ObjectId should reference mongodb.ObjectID not
     //   the ObjectIdConstructor, so we add the interface below
