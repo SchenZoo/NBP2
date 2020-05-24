@@ -1,4 +1,4 @@
-import { CACHE_KEYS } from './../../constants/CacheKeys';
+import { CACHE_KEYS } from "./../../constants/CacheKeys";
 import {
   JsonController,
   UseBefore,
@@ -71,7 +71,10 @@ export class ProfessorController {
       if (!professor) {
         throw new ObjectFromParamNotFound("User", id);
       }
-      if (!professor.imageURL.includes(DefaultImage.USER_PROFILE)) {
+      if (
+        professor.imageURL &&
+        !professor.imageURL.includes(DefaultImage.USER_PROFILE)
+      ) {
         await this.fileService.removeFile(
           getAbsoluteServerPath(professor.toObject({ getters: false }).imageURL)
         );
@@ -86,7 +89,9 @@ export class ProfessorController {
 
   @Delete("/:id")
   public async delete(@Param("id") id: string) {
-    const professor = await UserModel.findById(id).cache({ cacheKey: CACHE_KEYS.ITEM_USER(id) });
+    const professor = await UserModel.findById(id).cache({
+      cacheKey: CACHE_KEYS.ITEM_USER(id),
+    });
     if (!professor || professor.hasRoles([RoleNames.ADMIN])) {
       throw new ObjectFromParamNotFound("User", id);
     }

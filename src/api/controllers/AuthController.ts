@@ -5,6 +5,7 @@ import {
   Req,
   Get,
   NotFoundError,
+  BadRequestError,
 } from "routing-controllers";
 import { UserModel } from "../database/models/User";
 import jwt = require("jsonwebtoken");
@@ -40,6 +41,9 @@ export class AuthController {
 
   @Post("/register")
   public async save(@Body() userBody: UserValidator) {
+    if (!userBody.password) {
+      throw new BadRequestError("Password is required!");
+    }
     userBody.password = hashPassowrd(userBody.password);
     userBody.roles = [RoleNames.PARTICIPANT];
     try {

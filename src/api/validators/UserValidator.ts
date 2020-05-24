@@ -5,7 +5,7 @@ export class UserValidator {
   @IsNotEmpty()
   username: string;
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   password: string;
   @IsOptional()
   @IsEmail()

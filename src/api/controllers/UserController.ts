@@ -83,7 +83,7 @@ export class UserController {
     }
     if (updatedUser.imageBase64) {
       const user = request.requestUser;
-      if (!user.imageURL.includes(DefaultImage.USER_PROFILE)) {
+      if (user.imageURL && !user.imageURL.includes(DefaultImage.USER_PROFILE)) {
         await this.fileService.removeFile(
           getAbsoluteServerPath(user.toObject({ getters: false }).imageURL)
         );
