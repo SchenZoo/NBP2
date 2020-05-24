@@ -1,3 +1,6 @@
+import { CACHE_KEYS } from "./../../constants/CacheKeys";
+import { SectionModel, ISection } from "./../database/models/Section";
+import { IMongooseQuery } from "./../app_models/mongoose/IMongooseQuery";
 import {
   JsonController,
   UseBefore,
@@ -12,14 +15,12 @@ import {
 import { passportJwtMiddleware } from "../middlewares/PassportJwtMiddleware";
 import { checkRole } from "../middlewares/AuthorizationMiddlewares";
 import { RoleNames } from "../../constants/RoleNames";
-import { SectionModel } from "../database/models/Section";
 import { SectionValidation } from "../validators/SectionValidator";
 import { IUser } from "../database/models/User";
 import { FileService } from "../services/FileService";
 import {
   ModelImagePath,
   getAbsoluteServerPath,
-  DEFAULT_IMAGE_PATH,
 } from "../../constants/ModelImagePath";
 import { ObjectFromParamNotFound } from "../errors/ObjectFromParamNotFound";
 
@@ -28,14 +29,16 @@ export class SectionController {
   constructor(private fileService: FileService) {}
   @Get()
   public async get() {
-    return SectionModel.find().sort({ createdAt: -1 });
+    return (SectionModel.find().sort({
+      createdAt: -1,
+    }) as IMongooseQuery<ISection[]>).cache();
   }
 
   @Get("/:id")
-  public async getOne(
-    @Param("id") id: string
-  ) {
-    return SectionModel.findById(id);
+  public async getOne(@Param("id") id: string) {
+    return (SectionModel.findById(id) as IMongooseQuery<ISection>).cache({
+      cacheKey: CACHE_KEYS.ITEM_SECTION(id),
+    });
   }
 
   @Post()
@@ -64,7 +67,11 @@ export class SectionController {
     @Param("id") id: string
   ) {
     if (section.imageBase64) {
-      const oldSection = await SectionModel.findById(id);
+      const oldSection = await (SectionModel.findById(id) as IMongooseQuery<
+        ISection
+      >).cache({
+        cacheKey: CACHE_KEYS.ITEM_SECTION(id),
+      });
       if (!oldSection) {
         throw new ObjectFromParamNotFound("Section", id);
       }
@@ -83,7 +90,11 @@ export class SectionController {
   @UseBefore(checkRole([RoleNames.ADMIN]))
   @UseBefore(passportJwtMiddleware)
   public async delete(@Param("id") id: string) {
-    const section = await SectionModel.findById(id);
+    const section = await (SectionModel.findById(id) as IMongooseQuery<
+      ISection
+    >).cache({
+      cacheKey: CACHE_KEYS.ITEM_SECTION(id),
+    });
     if (!section) {
       throw new ObjectFromParamNotFound("Section", id);
     }
@@ -100,6 +111,6 @@ export class SectionController {
         );
       }
     }
-    return SectionModel.findByIdAndDelete(id);
+    return section.remove();
   }
 }

@@ -3,7 +3,6 @@ import mongoose, { Document, Schema, modelNames } from 'mongoose'
 import { ModelName } from '../../../constants/ModelName'
 import { IMessage } from './Message'
 import mongoosePaginate = require('mongoose-paginate')
-
 export interface IChatSession extends Document {
   participants: IUser[]
   type: ChatSessionTypes

@@ -1,14 +1,15 @@
-import mongoose, { Document, Schema } from 'mongoose'
-import { ModelName } from '../../../constants/ModelName'
-import { IUser } from './User'
-import mongoosePaginate = require('mongoose-paginate')
-import { getModelImageUrl } from '../../../constants/ModelImagePath'
+import { CACHE_KEYS } from "./../../../constants/CacheKeys";
+import mongoose, { Document, Schema } from "mongoose";
+import { ModelName } from "../../../constants/ModelName";
+import { IUser } from "./User";
+import { getModelImageUrl } from "../../../constants/ModelImagePath";
+import { initializeCacheClear } from "../../misc/MongoModelCacheClear";
 
 export interface ISection extends Document {
-  name: string
-  user: IUser | string
-  imageURL: string
-  onServer?: boolean
+  name: string;
+  user: IUser | string;
+  imageURL: string;
+  onServer?: boolean;
 }
 
 const sectionSchema = new Schema(
@@ -20,18 +21,22 @@ const sectionSchema = new Schema(
       required: true,
       get(url: string) {
         if (!url) {
-          return null
+          return null;
         }
         if ((this as any).onServer) {
-          return getModelImageUrl(url)
+          return getModelImageUrl(url);
         }
-        return url
+        return url;
       },
     },
     onServer: { type: Boolean, default: true },
   },
-  { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } },
-)
-sectionSchema.plugin(mongoosePaginate)
+  { timestamps: true, toJSON: { getters: true }, toObject: { getters: true } }
+);
 
-export const SectionModel = mongoose.model<ISection>(ModelName.SECTION, sectionSchema)
+initializeCacheClear(sectionSchema, ModelName.SECTION, CACHE_KEYS.ITEM_SECTION);
+
+export const SectionModel = mongoose.model<ISection>(
+  ModelName.SECTION,
+  sectionSchema
+);

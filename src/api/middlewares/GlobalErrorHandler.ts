@@ -44,7 +44,6 @@ export class GlobalErrorHandler implements ExpressErrorMiddlewareInterface {
         response.status(500)
         break
     }
-
     return response.json(error)
   }
 }

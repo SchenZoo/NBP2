@@ -1,45 +1,95 @@
-import { JsonController, UseBefore, Post, CurrentUser, Param, Body, Get, QueryParams } from 'routing-controllers'
-import { passportJwtMiddleware } from '../middlewares/PassportJwtMiddleware'
-import { IUser, UserModel } from '../database/models/User'
-import { ChatSessionModel } from '../database/models/ChatSession'
-import { ObjectFromParamNotFound } from '../errors/ObjectFromParamNotFound'
-import { ChatSessionRepository } from '../repositories/ChatSessionRepository'
-import { MessageService } from '../services/model_services/MessageService'
-import { ChatMessageValidator } from '../validators/ChatMessageValidator'
-import { Pagination } from '../misc/QueryPagination'
+import { CACHE_KEYS } from "./../../constants/CacheKeys";
+import { IMongooseQuery } from "./../app_models/mongoose/IMongooseQuery";
+import {
+  JsonController,
+  UseBefore,
+  Post,
+  CurrentUser,
+  Param,
+  Body,
+  Get,
+  QueryParams,
+} from "routing-controllers";
+import { passportJwtMiddleware } from "../middlewares/PassportJwtMiddleware";
+import { IUser, UserModel } from "../database/models/User";
+import { ChatSessionModel, IChatSession } from "../database/models/ChatSession";
+import { ObjectFromParamNotFound } from "../errors/ObjectFromParamNotFound";
+import { ChatSessionRepository } from "../repositories/ChatSessionRepository";
+import { MessageService } from "../services/model_services/MessageService";
+import { ChatMessageValidator } from "../validators/ChatMessageValidator";
+import { Pagination } from "../misc/QueryPagination";
 
-@JsonController('/chat')
+@JsonController("/chat")
 @UseBefore(passportJwtMiddleware)
 export class ChatController {
-  constructor(private chatModelService: MessageService, private chatSessionRepo: ChatSessionRepository) {}
-  @Post('/sessions/users/:id/messages')
+  constructor(
+    private chatModelService: MessageService,
+    private chatSessionRepo: ChatSessionRepository
+  ) {}
+
+  @Post("/sessions/users/:id/messages")
   public async sendMessage(
     @CurrentUser() user: IUser,
-    @Param('id') id: string,
-    @Body({ validate: { whitelist: true }, type: ChatMessageValidator }) body: ChatMessageValidator,
+    @Param("id") id: string,
+    @Body({ validate: { whitelist: true }, type: ChatMessageValidator })
+    body: ChatMessageValidator
   ) {
-    return this.chatModelService.addMessage(user, id, body)
+    return this.chatModelService.addMessage(user, id, body);
   }
-  @Get('/sessions')
-  public async getSessions(@CurrentUser() user: IUser, @QueryParams() query: Pagination) {
-    return ChatSessionModel.paginate({ participants: user.id }, { sort: { createdAt: -1 }, limit: query.take, offset: query.skip, populate: 'participants' })
+
+  @Get("/sessions")
+  public async getSessions(
+    @CurrentUser() user: IUser,
+    @QueryParams() query: Pagination
+  ) {
+    return (ChatSessionModel.find({ participants: user.id }) as IMongooseQuery<
+      IChatSession[]
+    >)
+      .paginate(query.skip, query.take)
+      .populate("participants")
+      .sort({ createdAt: -1 });
   }
-  @Get('/sessions/users/:id')
-  public async getUser(@CurrentUser() user: IUser, @Param('id') id: string, @QueryParams() query: Pagination) {
-    const session = await this.chatSessionRepo.getSessionBetweenTwoUsers(user.id, id)
+
+  @Get("/sessions/users/:id")
+  public async getUser(
+    @CurrentUser() user: IUser,
+    @Param("id") id: string,
+    @QueryParams() query: Pagination
+  ) {
+    const session = await this.chatSessionRepo.getSessionBetweenTwoUsers(
+      user.id,
+      id
+    );
+    const chatUser = await (UserModel.findById(id) as IMongooseQuery<
+      IUser
+    >).cache({ cacheKey: CACHE_KEYS.ITEM_USER(id) });
     if (!session) {
-      return { session: null, data: {docs: [], total: 0}, user: await UserModel.findById(id) }
+      return { session: null, data: { docs: [], total: 0 }, user: chatUser };
     }
-    const messagesWithCount = await this.chatSessionRepo.getSessionMessagesPaginated(session.id, query.skip, query.take)
-    return { session, data: messagesWithCount, user: await UserModel.findById(id) }
+    const messagesWithCount = await this.chatSessionRepo.getSessionMessagesPaginated(
+      session.id,
+      query.skip,
+      query.take
+    );
+    return { session, data: messagesWithCount, user: chatUser };
   }
-  @Get('/sessions/:id')
-  public async getSessionById(@Param('id') id: string, @QueryParams() query: Pagination) {
-    const session = await ChatSessionModel.findById(id)
+
+  @Get("/sessions/:id")
+  public async getSessionById(
+    @Param("id") id: string,
+    @QueryParams() query: Pagination
+  ) {
+    const session = await (ChatSessionModel.findById(id) as IMongooseQuery<
+      IChatSession
+    >);
     if (!session) {
-      return { session: null }
+      return { session: null };
     }
-    const messagesWithCount = await this.chatSessionRepo.getSessionMessagesPaginated(session.id, query.skip, query.take)
-    return { session, data: messagesWithCount }
+    const messagesWithCount = await this.chatSessionRepo.getSessionMessagesPaginated(
+      session.id,
+      query.skip,
+      query.take
+    );
+    return { session, data: messagesWithCount };
   }
 }

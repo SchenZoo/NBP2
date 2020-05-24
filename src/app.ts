@@ -9,6 +9,7 @@ import { JwtStrategy } from './auth/JwtStrategy'
 import { JsonInterceptor } from './api/interceptors/JsonInterceptor'
 import './api/database/MongoConnection'
 import './api/database/models/index'
+import './polyfills'
 import Controllers from './api/controllers'
 
 RoutingUseContainer(Container)
