@@ -28,9 +28,11 @@ export class SectionController {
   constructor(private fileService: FileService) {}
   @Get()
   public async get() {
-    return SectionModel.find().sort({
-      createdAt: -1,
-    }).cache();
+    return SectionModel.find()
+      .sort({
+        createdAt: -1,
+      })
+      .cache();
   }
 
   @Get("/:id")
@@ -72,9 +74,6 @@ export class SectionController {
       if (!oldSection) {
         throw new ObjectFromParamNotFound("Section", id);
       }
-      await this.fileService.removeFile(
-        getAbsoluteServerPath(oldSection.toObject({ getters: false }).imageURL)
-      );
       section.imageURL = await this.fileService.addBase64Image(
         section.imageBase64,
         ModelImagePath.SECTION
@@ -92,19 +91,6 @@ export class SectionController {
     });
     if (!section) {
       throw new ObjectFromParamNotFound("Section", id);
-    }
-    if (section.onServer) {
-      try {
-        await this.fileService.removeFile(
-          getAbsoluteServerPath(section.toObject({ getters: false }).imageURL)
-        );
-      } catch (err) {
-        console.error(
-          "Failed removing file from section: ",
-          section._id,
-          section.imageURL
-        );
-      }
     }
     return section.remove();
   }

@@ -71,14 +71,6 @@ export class ProfessorController {
       if (!professor) {
         throw new ObjectFromParamNotFound("User", id);
       }
-      if (
-        professor.imageURL &&
-        !professor.imageURL.includes(DefaultImage.USER_PROFILE)
-      ) {
-        await this.fileService.removeFile(
-          getAbsoluteServerPath(professor.toObject({ getters: false }).imageURL)
-        );
-      }
       newProfa.imageURL = await this.fileService.addBase64Image(
         newProfa.imageBase64,
         ModelImagePath.USER_PROFILE
@@ -94,16 +86,6 @@ export class ProfessorController {
     });
     if (!professor || professor.hasRoles([RoleNames.ADMIN])) {
       throw new ObjectFromParamNotFound("User", id);
-    }
-    if (
-      professor.imageURL &&
-      !professor.imageURL.includes(DefaultImage.USER_PROFILE)
-    ) {
-      this.fileService
-        .removeFile(
-          getAbsoluteServerPath(professor.toObject({ getters: false }).imageURL)
-        )
-        .catch((error) => console.error(error));
     }
     return professor.remove();
   }
