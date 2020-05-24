@@ -26,6 +26,9 @@ const chatSessionSchema = new Schema(
     type: {
       type: String,
     },
+    lastMessage: {
+      type: Schema.Types.Mixed,
+    },
   },
   {
     timestamps: true,

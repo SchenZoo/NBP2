@@ -1,6 +1,7 @@
+import { ChatSessionModel } from "./../../database/models/ChatSession";
 import { Service } from "typedi";
 import { IChatSession } from "../../database/models/ChatSession";
-import { MessageModel, IMessage } from "../../database/models/Message";
+import { MessageModel } from "../../database/models/Message";
 import { EventDispatcher } from "event-dispatch";
 import { ChatMessageValidator } from "../../validators/ChatMessageValidator";
 import { IUser } from "../../database/models/User";
@@ -24,6 +25,17 @@ export class MessageService {
       sender: sender.id,
       ref: chatMessage.ref,
     }).save();
+
+    ChatSessionModel.updateOne(
+      { _id: session._id },
+      {
+        lastMessage: {
+          ...message.toObject({ getters: true, virtuals: true }),
+          sender,
+        },
+      }
+    ).exec();
+
     const eventDispatcher = new EventDispatcher();
     eventDispatcher.dispatch("privateMessageSent", {
       sender,
