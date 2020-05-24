@@ -43,4 +43,10 @@ export function initializeCacheClear(
   schema.pre("save", () => {
     clearListCache();
   });
+
+  schema.pre("deleteOne", function () {
+    console.log("deleteOne", this);
+    clearOneItemCache((this as any).getQuery());
+    clearListCache();
+  });
 }

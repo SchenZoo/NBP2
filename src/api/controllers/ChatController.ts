@@ -1,3 +1,9 @@
+import { ObjectFromParamNotFound } from "./../errors/ObjectFromParamNotFound";
+import {
+  ChatSessionPolicy,
+  IChatSessionPolicyRequest,
+} from "./../policy/ChatSessionPolicy";
+import { BASE_POLICY_NAMES } from "./../policy/BasePolicy";
 import { CACHE_KEYS } from "./../../constants/CacheKeys";
 import {
   JsonController,
@@ -8,6 +14,7 @@ import {
   Body,
   Get,
   QueryParams,
+  Req,
 } from "routing-controllers";
 import { passportJwtMiddleware } from "../middlewares/PassportJwtMiddleware";
 import { IUser, UserModel } from "../database/models/User";
@@ -16,8 +23,9 @@ import { ChatSessionRepository } from "../repositories/ChatSessionRepository";
 import { MessageService } from "../services/model_services/MessageService";
 import { ChatMessageValidator } from "../validators/ChatMessageValidator";
 import { Pagination } from "../misc/QueryPagination";
+import { policyCheck } from "../middlewares/AuthorizationMiddlewares";
 
-@JsonController("/chat")
+@JsonController("/chat/sessions")
 @UseBefore(passportJwtMiddleware)
 export class ChatController {
   constructor(
@@ -25,28 +33,48 @@ export class ChatController {
     private chatSessionRepo: ChatSessionRepository
   ) {}
 
-  @Post("/sessions/users/:id/messages")
-  public async sendMessage(
-    @CurrentUser() user: IUser,
-    @Param("id") id: string,
-    @Body({ validate: { whitelist: true }, type: ChatMessageValidator })
-    body: ChatMessageValidator
-  ) {
-    return this.chatModelService.addMessage(user, id, body);
-  }
-
-  @Get("/sessions")
+  @Get("/")
   public async getSessions(
     @CurrentUser() user: IUser,
     @QueryParams() query: Pagination
   ) {
-    return ChatSessionModel.find({ participants: user.id })
+    return ChatSessionModel.find({ participantIds: user.id })
       .paginate(query.skip, query.take)
       .populate("participants")
       .sort({ createdAt: -1 });
   }
 
-  @Get("/sessions/users/:id")
+  @Get("/:id")
+  public async getSessionById(
+    @Param("id") id: string,
+    @QueryParams() query: Pagination
+  ) {
+    const session = await ChatSessionModel.findById(id).populate(
+      "participants"
+    );
+    if (!session) {
+      return { session: null };
+    }
+    const messagesWithCount = await this.chatSessionRepo.getSessionMessagesPaginated(
+      session.id,
+      query.skip,
+      query.take
+    );
+    return { session, messages: messagesWithCount };
+  }
+
+  @Post("/:id/messages")
+  @UseBefore(policyCheck(BASE_POLICY_NAMES.UPDATE, ChatSessionPolicy))
+  public async sendMessage(
+    @CurrentUser() user: IUser,
+    @Body({ validate: { whitelist: true }, type: ChatMessageValidator })
+    body: ChatMessageValidator,
+    @Req() req: IChatSessionPolicyRequest
+  ) {
+    return this.chatModelService.addMessage(user, req.requestSession, body);
+  }
+
+  @Get("/users/:id")
   public async getUser(
     @CurrentUser() user: IUser,
     @Param("id") id: string,
@@ -60,30 +88,13 @@ export class ChatController {
       cacheKey: CACHE_KEYS.ITEM_USER(id),
     });
     if (!session) {
-      return { session: null, data: { docs: [], total: 0 }, user: chatUser };
+      throw new ObjectFromParamNotFound("ChatSession", id);
     }
     const messagesWithCount = await this.chatSessionRepo.getSessionMessagesPaginated(
       session.id,
       query.skip,
       query.take
     );
-    return { session, data: messagesWithCount, user: chatUser };
-  }
-
-  @Get("/sessions/:id")
-  public async getSessionById(
-    @Param("id") id: string,
-    @QueryParams() query: Pagination
-  ) {
-    const session = await ChatSessionModel.findById(id);
-    if (!session) {
-      return { session: null };
-    }
-    const messagesWithCount = await this.chatSessionRepo.getSessionMessagesPaginated(
-      session.id,
-      query.skip,
-      query.take
-    );
-    return { session, data: messagesWithCount };
+    return { session, messages: messagesWithCount, user: chatUser };
   }
 }

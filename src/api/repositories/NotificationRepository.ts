@@ -9,7 +9,7 @@ import { ModelName } from "../../constants/ModelName";
 export class NotificationRepository {
   public async saveViaUser(text: string, emitter: IUser, receiverId: string) {
     const notification = await new NotificationModel({
-      text: `Imate novi friend request od ${emitter.username}.`,
+      text,
       relativeLink: getRelativeUserProfileLink(emitter.id),
       emitter: emitter.id,
       emitterOnModel: ModelName.USER,

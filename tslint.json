@@ -26,7 +26,6 @@
       "error",
       { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }
     ],
-    "trailing-comma": false,
     "no-implicit-dependencies": false
   },
   "rulesDirectory": [],

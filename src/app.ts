@@ -11,6 +11,7 @@ import passport = require("passport");
 import helmet = require("helmet");
 import { GlobalErrorHandler } from "./api/middlewares/GlobalErrorHandler";
 import { JwtStrategy } from "./auth/JwtStrategy";
+import AnonymousStrategy from "passport-anonymous";
 import { JsonInterceptor } from "./api/interceptors/JsonInterceptor";
 import "./api/database/MongoConnection";
 import "./api/database/models/index";
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use("jwt", JwtStrategy);
+passport.use(new AnonymousStrategy());
 
 const port: number = (process.env.APP_PORT || 3000) as number;
 const appEnv: string = (process.env.APP_ENV || "local") as string;

@@ -1,21 +1,22 @@
-import { IUser } from './User';
-import mongoose, { Document, Schema, modelNames } from 'mongoose';
-import { ModelName } from '../../../constants/ModelName';
-import { IMessage } from './Message';
+import { IUser } from "./User";
+import mongoose, { Document, Schema } from "mongoose";
+import { ModelName } from "../../../constants/ModelName";
+import { IMessage } from "./Message";
 export interface IChatSession extends Document {
   participants: IUser[];
+  participantIds: string[];
   type: ChatSessionTypes;
   messages?: IMessage[];
 }
 
 export enum ChatSessionTypes {
-  PRIVATE = 'private',
-  GROUP = 'group',
+  PRIVATE = "private",
+  GROUP = "group",
 }
 
 const chatSessionSchema = new Schema(
   {
-    participants: [
+    participantIds: [
       {
         type: Schema.Types.ObjectId,
         required: true,
@@ -26,7 +27,21 @@ const chatSessionSchema = new Schema(
       type: String,
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: { getters: true, virtuals: true },
+    toObject: { getters: true, virtuals: true },
+  }
 );
 
-export const ChatSessionModel = mongoose.model<IChatSession>(ModelName.CHAT_SESSION, chatSessionSchema);
+chatSessionSchema.virtual("participants", {
+  ref: ModelName.USER,
+  localField: "participantIds",
+  foreignField: "_id",
+  justOne: false,
+});
+
+export const ChatSessionModel = mongoose.model<IChatSession>(
+  ModelName.CHAT_SESSION,
+  chatSessionSchema
+);

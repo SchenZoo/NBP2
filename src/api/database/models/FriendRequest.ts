@@ -1,18 +1,49 @@
-import mongoose, { Document, Schema, model } from 'mongoose';
-import { ModelName } from '../../../constants/ModelName';
-import { IUser } from './User';
+import mongoose, { Document, Schema, model } from "mongoose";
+import { ModelName } from "../../../constants/ModelName";
+import { IUser } from "./User";
 
 export interface IFriendRequest extends Document {
-  sender: IUser | string;
-  receiver: IUser | string;
+  sender?: IUser;
+  receiver?: IUser;
+  senderId: string;
+  receiverId: string;
 }
 
 const friendRequestSchema = new Schema(
   {
-    sender: { ref: ModelName.USER, type: Schema.Types.ObjectId },
-    receiver: { ref: ModelName.USER, type: Schema.Types.ObjectId },
+    senderId: {
+      ref: ModelName.USER,
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
+    receiverId: {
+      ref: ModelName.USER,
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: { getters: true, virtuals: true },
+    toObject: { getters: true, virtuals: true },
+  }
 );
 
-export const FriendRequestModel = model<IFriendRequest>(ModelName.FRIEND_REQUEST, friendRequestSchema);
+friendRequestSchema.virtual("sender", {
+  ref: ModelName.USER,
+  localField: "senderId",
+  foreignField: "_id",
+  justOne: true,
+});
+
+friendRequestSchema.virtual("receiver", {
+  ref: ModelName.USER,
+  localField: "receiverId",
+  foreignField: "_id",
+  justOne: true,
+});
+
+export const FriendRequestModel = model<IFriendRequest>(
+  ModelName.FRIEND_REQUEST,
+  friendRequestSchema
+);
