@@ -22,7 +22,13 @@ export class NotificationSubscriber {
       body.notification,
       getUserRoom(body.receiverId)
     );
-    // SENDING EMAIL
-    // this.emailService.sendEmail(body.receiverId, 'Nova notifikacija od ' + body.userFrom.username, body.notification.text);
+    this.emailService
+      .sendEmail(
+        body.receiverId,
+        "Nova notifikacija od " + body.userFrom.username,
+        body.notification.text
+      )
+      .then(() => console.log("Email sent"))
+      .catch(() => console.log("Email sending failed"));
   }
 }

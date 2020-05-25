@@ -2,7 +2,6 @@ import express = require("express");
 import cors = require("cors");
 import Container from "typedi";
 import {
-  RoutingControllersOptions,
   useContainer as RoutingUseContainer,
   useExpressServer,
   Action,
