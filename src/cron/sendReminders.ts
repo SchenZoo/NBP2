@@ -1,11 +1,11 @@
-import { CronJob } from 'cron';
+import { CronJob } from "cron";
 
 export const sendReminders = new CronJob(
-  '0 * * * * *',
+  "0 * * * * *",
   () => {
-    console.log('TICK TACK MOTHERFUCKER');
+    console.log("Test cron");
   },
   undefined,
   true,
-  'Europe/Belgrade',
+  "Europe/Belgrade"
 );
