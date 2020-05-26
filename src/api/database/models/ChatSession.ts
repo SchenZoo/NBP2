@@ -51,7 +51,7 @@ chatSessionSchema.virtual("participants", {
   justOne: false,
 });
 
-chatSessionSchema.pre<IChatSession>("save", function (next) {
+chatSessionSchema.post<IChatSession>("save", function () {
   const socketService = Container.get(SocketService);
   this.participantIds.forEach((participantId) => {
     socketService.sendEventInRoom(
@@ -62,7 +62,6 @@ chatSessionSchema.pre<IChatSession>("save", function (next) {
       getUserRoom(participantId)
     );
   });
-  next();
 });
 
 export const ChatSessionModel = mongoose.model<IChatSession>(
