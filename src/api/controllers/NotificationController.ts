@@ -32,7 +32,7 @@ export class NotificationController {
       NotificationModel.find({
         receiver: user.id,
         $or: [{ openedAt: null }, { openedAt: { $exists: false } }],
-      }),
+      }).countDocuments(),
     ]);
     return {
       notifications,
