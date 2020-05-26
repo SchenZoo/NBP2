@@ -4,8 +4,8 @@ import {
   Get,
   QueryParams,
   CurrentUser,
-  Put,
   Req,
+  Post,
 } from "routing-controllers";
 import { passportJwtMiddleware } from "../middlewares/PassportJwtMiddleware";
 import { Pagination } from "../misc/QueryPagination";
@@ -40,7 +40,7 @@ export class NotificationController {
     };
   }
 
-  @Put("/:id/opeted-at")
+  @Post("/:id/opened-at")
   @UseBefore(policyCheck(BASE_POLICY_NAMES.UPDATE, NotificationPolicy))
   public async openNotification(@Req() request: INotificationRequest) {
     request.notification.openedAt = new Date();
