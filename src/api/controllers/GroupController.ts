@@ -124,22 +124,28 @@ export class GroupController {
   ) {
     const group = req.requestGroup;
     if (
-      group.participants.some(
-        (participant) =>
-          `${participant.participantId}` === `${body.participantId}`
+      group.participants.some((participant) =>
+        body.participantIds.some(
+          (participantId) =>
+            `${participantId}` === `${participant.participantId}`
+        )
       )
     ) {
       throw new ConflictError("Participant is already part of the group");
     }
+    const newParticipants = body.participantIds.map((participantId) => ({
+      participantId,
+      type: GROUP_PARTICIPANT_TYPES.USER,
+    }));
     const [updatedGroup] = await Promise.all([
       GroupModel.findByIdAndUpdate(
         group._id,
-        { $push: { participants: body } },
+        { $push: { participants: { $each: newParticipants } } },
         { new: true }
       ),
-      this.sessionService.addParticipant(
+      this.sessionService.addMultiParticipants(
         group.chatSessionId,
-        body.participantId
+        body.participantIds
       ),
     ]);
     return updatedGroup;

@@ -25,6 +25,17 @@ export class ChatSessionService {
     return session;
   }
 
+  async addMultiParticipants(sessionId: string, participantIds: string[]) {
+    const session = await ChatSessionModel.findByIdAndUpdate(
+      { _id: sessionId },
+      { $push: { participantIds: { $each: participantIds } } },
+      { new: true }
+    ).populate("participants");
+
+    this.emitParticipantsChange(session);
+    return session;
+  }
+
   async removeParticipant(sessionId: string, participantId: string) {
     const session = await ChatSessionModel.findByIdAndUpdate(
       sessionId,
