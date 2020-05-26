@@ -1,7 +1,11 @@
+import { SocketEventNames } from "./../../../constants/SocketEventNames";
+import { SocketService } from "./../../services/SocketService";
+import { Container } from "typedi";
 import { ChatSessionModel } from "./ChatSession";
 import { Document, Schema, model } from "mongoose";
 import { ModelName } from "../../../constants/ModelName";
 import { IUser } from "./User";
+import { getUserRoom } from "../../../constants/SocketRoomNames";
 
 export interface IFriendship extends Document {
   marioId: string;
@@ -52,6 +56,18 @@ friendshipSchema.virtual("luigi", {
 
 friendshipSchema.pre<IFriendship>("remove", async function () {
   if (this.chatSessionId) {
+    const socketService = Container.get(SocketService);
+    const sendSocketEventForRemoveSession = (id: string) => {
+      socketService.sendEventInRoom(
+        SocketEventNames.SESSION_REMOVED,
+        {
+          sessionId: this.chatSessionId,
+        },
+        getUserRoom(id)
+      );
+    };
+    sendSocketEventForRemoveSession(this.luigiId);
+    sendSocketEventForRemoveSession(this.marioId);
     await ChatSessionModel.deleteOne({ _id: this.chatSessionId });
   }
 });

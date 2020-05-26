@@ -1,3 +1,4 @@
+import { SocketService } from "./../services/SocketService";
 import { ChatSessionService } from "./../services/SessionService";
 import {
   ChatSessionModel,
@@ -32,11 +33,16 @@ import { passportJwtMiddleware } from "../middlewares/PassportJwtMiddleware";
 import { Pagination } from "../misc/QueryPagination";
 import { IUser } from "../database/models/User";
 import { GroupModel } from "../database/models";
+import { SocketEventNames } from "../../constants/SocketEventNames";
+import { getUserRoom } from "../../constants/SocketRoomNames";
 
 @JsonController("/groups")
 @UseBefore(passportJwtMiddleware)
 export class GroupController {
-  constructor(private sessionService: ChatSessionService) {}
+  constructor(
+    private sessionService: ChatSessionService,
+    private socketService: SocketService
+  ) {}
 
   @Get()
   public async get(
@@ -109,6 +115,13 @@ export class GroupController {
   @UseBefore(checkRole([RoleNames.ADMIN, RoleNames.PROFESSOR]))
   public async delete(@Req() req: IGroupPolicyRequest) {
     const group = req.requestGroup;
+    group.participants.forEach((participant) => {
+      this.socketService.sendEventInRoom(
+        SocketEventNames.SESSION_REMOVED,
+        { sessionId: group.chatSessionId },
+        getUserRoom(participant.participantId)
+      );
+    });
     await Promise.all([
       group.remove(),
       ChatSessionModel.deleteOne({ _id: group.chatSessionId }),
