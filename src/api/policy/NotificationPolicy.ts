@@ -1,16 +1,24 @@
-import { BasePolicy } from './BasePolicy';
-import { NotificationModel } from '../database/models/Notification';
-import { ObjectFromParamNotFound } from '../errors/ObjectFromParamNotFound';
-import { request } from 'http';
-import { INotificationRequest } from '../app_models/requests/INotificationRequest';
+import { BasePolicy } from "./BasePolicy";
+import {
+  NotificationModel,
+  INotification,
+} from "../database/models/Notification";
+import { ObjectFromParamNotFound } from "../errors/ObjectFromParamNotFound";
+import { Request } from "express";
 
 export class NotificationPolicy extends BasePolicy {
   public async default(): Promise<boolean> {
-    const notification = await NotificationModel.findById(this.request.params.id);
+    const { id } = this.request.params;
+    const notification = await NotificationModel.findById(id);
     if (!notification) {
-      throw new ObjectFromParamNotFound('Notification', this.request.params.id);
+      throw new ObjectFromParamNotFound("Notification", id);
     }
-    (this.request as INotificationRequest).notification = notification;
-    return this.request.params.receiver === this.user.id;
+    (this
+      .request as INotificationPolicyRequest).requestNotification = notification;
+    return `${notification.receiver}` === `${this.user.id}`;
   }
+}
+
+export interface INotificationPolicyRequest extends Request {
+  requestNotification: INotification;
 }

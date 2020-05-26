@@ -11,10 +11,12 @@ import { passportJwtMiddleware } from "../middlewares/PassportJwtMiddleware";
 import { Pagination } from "../misc/QueryPagination";
 import { IUser } from "../database/models/User";
 import { NotificationModel } from "../database/models/Notification";
-import { NotificationPolicy } from "../policy/NotificationPolicy";
+import {
+  NotificationPolicy,
+  INotificationPolicyRequest,
+} from "../policy/NotificationPolicy";
 import { policyCheck } from "../middlewares/AuthorizationMiddlewares";
 import { BASE_POLICY_NAMES } from "../policy/BasePolicy";
-import { INotificationRequest } from "../app_models/requests/INotificationRequest";
 
 @JsonController("/notifications")
 @UseBefore(passportJwtMiddleware)
@@ -42,9 +44,9 @@ export class NotificationController {
 
   @Post("/:id/opened-at")
   @UseBefore(policyCheck(BASE_POLICY_NAMES.UPDATE, NotificationPolicy))
-  public async openNotification(@Req() request: INotificationRequest) {
-    request.notification.openedAt = new Date();
-    request.notification.save();
+  public async openNotification(@Req() request: INotificationPolicyRequest) {
+    request.requestNotification.openedAt = new Date();
+    request.requestNotification.save();
     return { message: "Opened" };
   }
 }
