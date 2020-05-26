@@ -49,6 +49,7 @@ export class GroupController {
     }
     return GroupModel.find(mongoQuery)
       .sort({ createdAt: -1 })
+      .populate("participants.participant")
       .paginate(query.skip, query.take)
       .cache();
   }
