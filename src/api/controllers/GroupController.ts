@@ -107,7 +107,9 @@ export class GroupController {
     @Body() body: GroupObjectValidator,
     @Param("id") id: string
   ) {
-    return GroupModel.findByIdAndUpdate(id, body, { new: true });
+    return GroupModel.findByIdAndUpdate(id, body, { new: true }).populate(
+      "participants.participant"
+    );
   }
 
   @Delete("/:id")

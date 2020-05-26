@@ -1,3 +1,4 @@
+import { StatisticController } from "./StatisticController";
 import { GroupController } from "./GroupController";
 import { UserController } from "./UserController";
 import { SectionController } from "./SectionController";
@@ -22,4 +23,5 @@ export default {
   SectionController,
   UserController,
   GroupController,
+  StatisticController,
 };

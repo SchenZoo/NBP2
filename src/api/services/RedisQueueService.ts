@@ -12,6 +12,7 @@ export class RedisQueueService {
   redisPub: Redis;
   redisSub: Redis;
   emitter: EventEmitter;
+  REDIS_QUEUE_CHANNELS = REDIS_QUEUE_CHANNELS;
 
   constructor() {
     this.redisPub = new RedisInstance(REDIS_QUEUE_CONFIG as RedisOptions);
@@ -28,7 +29,11 @@ export class RedisQueueService {
     // subscribe to all channels
     this.redisSub.subscribe(...Object.values(REDIS_QUEUE_CHANNELS));
   }
-  async sendMessageWithResponse(channel: string, data: any, timeout = 30000) {
+  async sendMessageWithResponse(
+    channel: string,
+    data: any = {},
+    timeout = 30000
+  ) {
     const messageIdentifier = md5(
       JSON.stringify(data) +
         new Date().getUTCMilliseconds() +
