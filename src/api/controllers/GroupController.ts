@@ -85,12 +85,13 @@ export class GroupController {
       type: ChatSessionTypes.GROUP,
       participantIds: allParticipants.map((par) => par.participantId),
     }).save();
-    return new GroupModel({
+    const group = await new GroupModel({
       ...body,
       userId: user._id,
       participants: allParticipants,
       chatSessionId: chatSession._id,
     }).save();
+    return group.populate("participants.participant").execPopulate();
   }
 
   @Put("/:id")
