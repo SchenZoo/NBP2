@@ -35,6 +35,7 @@ const groupParticipantSchema = new Schema(
     toJSON: { getters: true, virtuals: true },
     toObject: { getters: true, virtuals: true },
     id: false,
+    _id: false,
   }
 );
 

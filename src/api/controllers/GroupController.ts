@@ -142,7 +142,7 @@ export class GroupController {
         group._id,
         { $push: { participants: { $each: newParticipants } } },
         { new: true }
-      ),
+      ).populate("participants.participant"),
       this.sessionService.addMultiParticipants(
         group.chatSessionId,
         body.participantIds

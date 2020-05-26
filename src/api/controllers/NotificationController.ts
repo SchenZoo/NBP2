@@ -24,10 +24,20 @@ export class NotificationController {
     @QueryParams() query: Pagination,
     @CurrentUser() user: IUser
   ) {
-    return NotificationModel.find({ receiver: user.id })
-      .sort({ createdAt: -1 })
-      .paginate(query.skip, query.take)
-      .populate("emitter");
+    const [notifications, totalNotOpened] = await Promise.all([
+      NotificationModel.find({ receiver: user.id })
+        .sort({ createdAt: -1 })
+        .paginate(query.skip, query.take)
+        .populate("emitter"),
+      NotificationModel.find({
+        receiver: user.id,
+        $or: [{ openedAt: null }, { openedAt: { $exists: false } }],
+      }),
+    ]);
+    return {
+      notifications,
+      totalNotOpened,
+    };
   }
 
   @Put("/:id/opeted-at")
