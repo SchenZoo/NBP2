@@ -71,14 +71,20 @@ export class PostController {
     const post = body.post;
     post.user = user.id;
     post.section = id;
+
+    let createdPost;
     switch (body.type) {
       case PostTypes.EVENT:
-        return new EventModel(post).save();
+        createdPost = new EventModel(post).save();
+        break;
       case PostTypes.TEXT_POST:
-        return new TextPostModel(post).save();
+        createdPost = new TextPostModel(post).save();
+        break;
       default:
-        return new PostModel(post).save();
+        createdPost = new PostModel(post).save();
+        break;
     }
+    return createdPost.populate("user").execPopulate();
   }
 
   @Put("/posts/:id")
@@ -89,9 +95,19 @@ export class PostController {
     const post = body.post;
     switch (body.type) {
       case PostTypes.EVENT:
-        return EventModel.findByIdAndUpdate(id, post, { new: true });
+        return EventModel.findByIdAndUpdate(id, post, { new: true })
+          .populate({
+            path: "comments",
+            populate: "user",
+          })
+          .populate("user");
       case PostTypes.TEXT_POST:
-        return TextPostModel.findByIdAndUpdate(id, post, { new: true });
+        return TextPostModel.findByIdAndUpdate(id, post, { new: true })
+          .populate({
+            path: "comments",
+            populate: "user",
+          })
+          .populate("user");
       default:
         throw new HttpError(500, "This is bugish  :)");
     }
