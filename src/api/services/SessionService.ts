@@ -26,13 +26,22 @@ export class ChatSessionService {
   }
 
   async addMultiParticipants(sessionId: string, participantIds: string[]) {
-    const session = await ChatSessionModel.findByIdAndUpdate(
+    const session = (await ChatSessionModel.findByIdAndUpdate(
       { _id: sessionId },
       { $push: { participantIds: { $each: participantIds } } },
       { new: true }
-    ).populate("participants");
+    ).populate("participants")) as IChatSession;
 
     this.emitParticipantsChange(session);
+    participantIds.forEach((participantId) => {
+      this.socketService.sendEventInRoom(
+        SocketEventNames.SESSION_CREATED,
+        {
+          sessionId: session._id,
+        },
+        getUserRoom(participantId)
+      );
+    });
     return session;
   }
 

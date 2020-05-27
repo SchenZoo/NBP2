@@ -13,9 +13,6 @@ export class MessageService {
     session: IChatSession,
     chatMessage: ChatMessageValidator
   ) {
-    if (!session.populated("participants")) {
-      await session.populate("participants").execPopulate();
-    }
     const message = await new MessageModel({
       text: chatMessage.text,
       files: chatMessage.files,
@@ -25,6 +22,16 @@ export class MessageService {
       sender: sender.id,
       ref: chatMessage.ref,
     }).save();
+    const dataPreparationPromises: Array<Promise<any>> = [];
+    if (message.data) {
+      dataPreparationPromises.push(message.populate("data").execPopulate());
+    }
+    if (!session.populated("participants")) {
+      dataPreparationPromises.push(
+        session.populate("participants").execPopulate()
+      );
+    }
+    await Promise.all(dataPreparationPromises);
 
     ChatSessionModel.updateOne(
       { _id: session._id },

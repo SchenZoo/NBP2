@@ -17,9 +17,6 @@ export class MessageSubscriber {
   async onMessageSent(body: IPrivateMessageSent) {
     const { message, session } = body;
     const chatMessage = new MessageModel(message);
-    if (message.data) {
-      await chatMessage.populate("data").execPopulate();
-    }
     session.participants.forEach((participant) => {
       this.socketService.sendEventInRoom(
         SocketEventNames.MESSAGE,
