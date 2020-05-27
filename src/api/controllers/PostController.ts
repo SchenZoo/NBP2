@@ -1,3 +1,4 @@
+import { IPost } from "./../database/models/Post";
 import { CommentPolicy } from "./../policy/CommentPolicy";
 import {
   JsonController,
@@ -72,16 +73,16 @@ export class PostController {
     post.user = user.id;
     post.section = id;
 
-    let createdPost;
+    let createdPost: IPost;
     switch (body.type) {
       case PostTypes.EVENT:
-        createdPost = new EventModel(post).save();
+        createdPost = await new EventModel(post).save();
         break;
       case PostTypes.TEXT_POST:
-        createdPost = new TextPostModel(post).save();
+        createdPost = await new TextPostModel(post).save();
         break;
       default:
-        createdPost = new PostModel(post).save();
+        createdPost = await new PostModel(post).save();
         break;
     }
     return createdPost.populate("user").execPopulate();

@@ -1,9 +1,9 @@
 import { IUser } from "./User";
-import { Document, Schema } from "mongoose";
+import { Schema } from "mongoose";
 import { locationSchema, ILocation } from "./Location";
-import { PostModel, POST_DISCRIMINATOR_KEY, PostTypes } from "./Post";
+import { PostModel, POST_DISCRIMINATOR_KEY, PostTypes, IPost } from "./Post";
 
-export interface IEvent extends Document {
+export interface IEvent extends IPost {
   title: string;
   text: string;
   user: IUser | string;

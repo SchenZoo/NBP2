@@ -1,9 +1,8 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import { IUser } from './User';
-import { ModelName } from '../../../constants/ModelName';
-import { ISection } from './Section';
-import { IEvent } from './Event';
-import { IComment, CommentModel, commentSchema } from './Comment';
+import mongoose, { Document, Schema } from "mongoose";
+import { IUser } from "./User";
+import { ModelName } from "../../../constants/ModelName";
+import { ISection } from "./Section";
+import { IComment } from "./Comment";
 
 export interface IPost extends Document {
   title: string;
@@ -14,10 +13,10 @@ export interface IPost extends Document {
   __t: string;
 }
 
-export const POST_DISCRIMINATOR_KEY = 'type';
+export const POST_DISCRIMINATOR_KEY = "type";
 export enum PostTypes {
-  EVENT = 'EventPost',
-  TEXT_POST = 'TextPost',
+  EVENT = "EventPost",
+  TEXT_POST = "TextPost",
 }
 
 const postSchema = new Schema(
@@ -32,17 +31,24 @@ const postSchema = new Schema(
     toJSON: {
       virtuals: true,
     },
-  },
+  }
 );
 
-postSchema.virtual('comments', {
+postSchema.virtual("comments", {
   ref: ModelName.COMMENT,
-  localField: '_id',
-  foreignField: 'commented',
+  localField: "_id",
+  foreignField: "commented",
   justOne: false,
-  options: { sort: { createdAt: -1 }, limit: 10, where: { onModel: ModelName.POST } },
+  options: {
+    sort: { createdAt: -1 },
+    limit: 10,
+    where: { onModel: ModelName.POST },
+  },
 });
 
 export const PostModel = mongoose.model<IPost>(ModelName.POST, postSchema);
 
-export const TextPostModel = PostModel.discriminator<IPost>(PostTypes.TEXT_POST, new Schema());
+export const TextPostModel = PostModel.discriminator<IPost>(
+  PostTypes.TEXT_POST,
+  new Schema()
+);
