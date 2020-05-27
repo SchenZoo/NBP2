@@ -16,12 +16,11 @@ export class MessageSubscriber {
   @On("privateMessageSent")
   async onMessageSent(body: IPrivateMessageSent) {
     const { message, session } = body;
-    const chatMessage = new MessageModel(message);
     session.participants.forEach((participant) => {
       this.socketService.sendEventInRoom(
         SocketEventNames.MESSAGE,
         {
-          message: chatMessage,
+          message,
           session,
         },
         getUserRoom(participant.id)
