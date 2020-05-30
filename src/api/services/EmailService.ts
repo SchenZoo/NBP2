@@ -17,7 +17,7 @@ export class EmailService {
       return false;
     }
     const mailOptions = {
-      from: "Stane <aleksandar.stankovic6496@gmail.com>",
+      from: "NBP <aleksandar.stankovic6496@gmail.com>",
       to: receiver.email,
       subject,
       text,
