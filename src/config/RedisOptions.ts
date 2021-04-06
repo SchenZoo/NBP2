@@ -7,7 +7,7 @@ export const {
   REDIS_QUEUE_DB = 3,
 } = process.env;
 
-if (!REDIS_HOST || !REDIS_PORT || !REDIS_PASSWORD) {
+if (!REDIS_HOST || !REDIS_PORT) {
   console.error("Redis environment variables missing");
   process.exit(1);
 }

@@ -106,11 +106,15 @@ export class FriendRequestController {
       type: ChatSessionTypes.PRIVATE,
       participantIds: [friendRequest.senderId, user._id],
     }).save();
-    return new FriendshipModel({
+    const newFriendship = await new FriendshipModel({
       marioId: friendRequest.senderId,
       luigiId: user.id,
       chatSessionId: chatSession._id,
     }).save();
+
+    await newFriendship.populate("mario").populate("luigi").execPopulate();
+
+    return newFriendship;
   }
 
   @Delete("/:id")

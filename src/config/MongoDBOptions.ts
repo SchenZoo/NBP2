@@ -1,5 +1,3 @@
-import { ConnectionOptions } from "mongoose";
-
 const server = process.env.MONGO_HOSTNAME + ":" + process.env.MONGO_PORT;
 const database = process.env.MONGO_DB;
 

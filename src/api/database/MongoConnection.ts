@@ -1,9 +1,12 @@
-import mongoose = require('mongoose');
-import 'reflect-metadata';
-import dotenv = require('dotenv');
-import path = require('path');
-dotenv.config({ path: path.resolve('.env') });
-import { MONGO_URL, MONGO_CONNECTION_OPTIONS } from '../../config/MongoDBOptions';
+import mongoose = require("mongoose");
+import "reflect-metadata";
+import { initializeEnvironment } from "../../config/Environment";
+initializeEnvironment();
+
+import {
+  MONGO_URL,
+  MONGO_CONNECTION_OPTIONS,
+} from "../../config/MongoDBOptions";
 
 class MongoConnection {
   constructor() {
@@ -12,12 +15,12 @@ class MongoConnection {
   connect() {
     mongoose
       .connect(MONGO_URL, MONGO_CONNECTION_OPTIONS)
-      .then(res => {
-        console.log('Connected to mongo ' + MONGO_URL);
+      .then((res) => {
+        console.log("Connected to mongo " + MONGO_URL);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-        console.error('Database connection error');
+        console.error("Database connection error");
       });
   }
 }
