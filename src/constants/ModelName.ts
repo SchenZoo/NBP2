@@ -3,6 +3,7 @@ export enum ModelName {
   COMMENT = "Comment",
   USER = "User",
   SECTION = "Section",
+  SECTION_SUBSCRIPTION = "SectionSubscription",
   MESSAGE = "Message",
   CHAT_SESSION = "ChatSession",
   REMINDER = "Reminder",

@@ -11,6 +11,7 @@ import { ReportTicketModel } from "./ReportTicket";
 import { SectionModel } from "./Section";
 import { UserModel } from "./User";
 import { GroupModel } from "./Group";
+import { SectionSubscriptionModel } from "./SectionSubscription";
 
 export {
   ChatSessionModel,
@@ -26,4 +27,5 @@ export {
   SectionModel,
   UserModel,
   GroupModel,
+  SectionSubscriptionModel,
 };

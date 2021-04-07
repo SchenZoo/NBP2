@@ -34,10 +34,16 @@ import { FileService } from "../services/FileService";
 import { plainToClass } from "class-transformer";
 import { PostValidator } from "../validators/PostValidator";
 import { ICommentPolicyRequest } from "../policy/CommentPolicy";
+import { NotificationRepository } from "../repositories/NotificationRepository";
+import { SectionModel, SectionSubscriptionModel } from "../database/models";
+import { CACHE_KEYS } from "../../constants/CacheKeys";
 
 @JsonController("/sections")
 export class PostController {
-  constructor(private fileService: FileService) {}
+  constructor(
+    private fileService: FileService,
+    private notifyRepo: NotificationRepository
+  ) {}
   @Get("/:sectionId/posts")
   public async get(
     @QueryParams() query: Pagination,
@@ -85,6 +91,29 @@ export class PostController {
         createdPost = await new PostModel(post).save();
         break;
     }
+
+    (async () => {
+      const section = await SectionModel.findById(id).cache({
+        cacheKey: CACHE_KEYS.ITEM_SECTION(id),
+      });
+
+      if (!section) return;
+
+      const sectionSubscriptions = await SectionSubscriptionModel.find({
+        sectionId: id,
+      }).lean();
+
+      sectionSubscriptions.forEach((subscription) => {
+        if (`${subscription.userId}` === `${user._id}`) return;
+        this.notifyRepo.saveViaPost(
+          `${user.name} je objavio post "${createdPost.title}" u sekciji ${section?.name}.`,
+          createdPost,
+          user,
+          subscription.userId
+        );
+      });
+    })();
+
     return createdPost.populate("user").execPopulate();
   }
 

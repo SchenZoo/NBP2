@@ -6,10 +6,10 @@ import { hashPassowrd } from "../../misc/Hash";
 (async () => {
   const admin = new UserModel({
     username: "Admin",
-    name: "Stane",
+    name: "Admin",
     password: hashPassowrd("asdlolasd"),
     roles: [RoleNames.ADMIN],
-    email: "stankovic.aleksandar@elfak.rs",
+    email: "veljkoadmin@elfak.rs",
   });
   try {
     await admin.save();

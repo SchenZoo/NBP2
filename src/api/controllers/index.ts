@@ -10,6 +10,7 @@ import { FriendshipController } from "./FriendshipController";
 import { FriendRequestController } from "./FriendRequestController";
 import { ChatController } from "./ChatController";
 import { AuthController } from "./AuthController";
+import { SectionSubscriptionController } from "./SectionSubscriptionController";
 
 export default {
   AuthController,
@@ -24,4 +25,5 @@ export default {
   UserController,
   GroupController,
   StatisticController,
+  SectionSubscriptionController,
 };
